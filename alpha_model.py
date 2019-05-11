@@ -14,3 +14,6 @@ class AlphaModel():
         # each row of X is one feature vector
         # output is a vector of returns
         raise NotImplementedError
+
+    def getModelInfo():
+        raise NotImplementedError
