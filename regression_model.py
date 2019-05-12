@@ -16,7 +16,7 @@ class RegressionModel(AlphaModel):
         	self.model = Lasso()
         else:
         	self.model = LinearRegression()
-        	
+    
     def getModelInfo(self):
         if(self.regularization == 1):
             return "Linear Regression"
@@ -39,14 +39,13 @@ class RegressionModel(AlphaModel):
         if(self.regularization == 4 or self.regularization == 5):
         	XtrainPoly = poly.fit_transform(X)
         	self.model.fit(XtrainPoly, Y)
-
         else:
         	self.model.fit(X,Y)
 
     def predict(self, X):
     	if(self.regularization ==4):
     		poly = PolynomialFeatures(interaction_only=True,include_bias = False)
-
+            
     	if(self.regularization == 5):
     		poly = PolynomialFeatures(3)
 
