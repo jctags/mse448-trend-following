@@ -16,7 +16,7 @@ class LSTMModel(AlphaModel):
         Xtrain = X.values 
         Ytrain = Y.values
         lookback = 50
-     
+        print("1")
         x = []
         y = []
         for i in range(len(Xtrain)-lookback-1):
