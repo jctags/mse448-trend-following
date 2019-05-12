@@ -37,6 +37,7 @@ data_start = 1990
 valid_start = 2010
 test_start = 2014
 data_end = 2018
+print("1")
 model_class = LSTMModel
 
 for i, filename in enumerate(os.listdir(features_directory)):
