@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-%matplotlib inline
 from sklearn.linear_model import LinearRegression
 import numpy as np
 from regression_model import RegressionModel
