@@ -53,5 +53,5 @@ class RegressionModel(AlphaModel):
     	if(self.regularization == 4 or self.regularization == 5):
     		XtestPoly = poly.fit_transform(X)
     		return np.array(self.model.predict(XtestPoly))
-
+        
         return np.array(self.model.predict(X))
