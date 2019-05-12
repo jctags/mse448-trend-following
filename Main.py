@@ -6,6 +6,8 @@ from regression_model import RegressionModel
 from LSTM_model import LSTMModel
 import os
 
+
+print("1")
 def get_dataframe(filename):
     df = pd.read_csv(filename)
     df['Date'] = pd.to_datetime(df["Unnamed: 0"], dayfirst=True)
@@ -16,10 +18,12 @@ def get_dataframe(filename):
         df[col+'norm'] = df[col] / df['Settle_Price'] - 1
     return df
 
+print("2")
 def get_data_by_years(df, years, features, label):
     ydf = df[df.Date.map(lambda x: x.year in years)]
     return ydf[features].values, ydf[label].values
 
+print("3")
 def get_data(df, data_start, valid_start, test_start, data_end, features, label):
     data = {}
     train_years = list(range(data_start,  valid_start))
@@ -30,6 +34,7 @@ def get_data(df, data_start, valid_start, test_start, data_end, features, label)
     data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years,  features, label)
     return data
 
+print("4")
 features = ['MACD', 'Volume']
 label = 'Daily_Return'
 features_directory = 'data'
@@ -37,9 +42,9 @@ data_start = 1990
 valid_start = 2010
 test_start = 2014
 data_end = 2018
-print("1")
 model_class = LSTMModel
 
+print("5")
 for i, filename in enumerate(os.listdir(features_directory)):
     df = get_dataframe(features_directory + '/' + filename)
     data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
@@ -50,6 +55,7 @@ for i, filename in enumerate(os.listdir(features_directory)):
     output['true_'+str(i)] = data['Ytest']
 returns_df = pd.DataFrame(output)
 
+print("6")
 from simple_portfolio import SimplePortfolio
 returns = np.array([0.01])
 optimizer = SimplePortfolio(1)
