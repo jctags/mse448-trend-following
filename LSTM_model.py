@@ -25,7 +25,8 @@ class LSTMModel(AlphaModel):
                 t.append(Xtrain[[(i+j)], :])
             x.append(t)
             y.append(Ytrain[i+ lookback])
-         x, y = np.array(x), np.array(y)
+         x = np.array(x)
+         y = np.array(y)
          x = x.reshape(x.shape[0],lookback, 2)
   
         model.add(LSTM(units=30, return_sequences= True, input_shape=(x.shape[1],2)))
