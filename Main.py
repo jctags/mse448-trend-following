@@ -4,12 +4,7 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 from regression_model import RegressionModel
 import os
-
-from sklearn.linear_model import LinearRegression
-import numpy as np
-#from regression_model import RegressionModel
 from LSTM_model import LSTMModel
-import os
 
 def get_dataframe(filename):
     df = pd.read_csv(filename)
@@ -45,10 +40,7 @@ data_end = 2018
 
 model_class = RegressionModel
 
-
 model_class = LSTMModel
-
-
 
 for i, filename in enumerate(os.listdir(features_directory)):
     df = get_dataframe(features_directory + '/' + filename)
