@@ -9,11 +9,16 @@ from keras.layers import Dense, LSTM
 
 class LSTMModel(AlphaModel):
     def __init__(self):
-        self.model = Sequential()
-   
+        self.model = 0
+        model = Sequential()
+        model.add(LSTM(units=30, return_sequences= True, input_shape=(X.shape[1],2)))
+        model.add(LSTM(units=30, return_sequences=True))
+        model.add(LSTM(units=30))
+        model.add(Dense(units=1))
+
     def train(self, X, Y):
         assert len(X)==len(Y)
-        Xtrain = X.values 
+        Xtrain = X.values
         Ytrain = Y.values
         lookback = 50
         print("1")
@@ -28,7 +33,7 @@ class LSTMModel(AlphaModel):
          x = np.array(x)
          y = np.array(y)
          x = x.reshape(x.shape[0],lookback, 2)
-  
+
         model.add(LSTM(units=30, return_sequences= True, input_shape=(x.shape[1],2)))
         model.add(LSTM(units=30, return_sequences=True))
         model.add(LSTM(units=30))
@@ -36,19 +41,6 @@ class LSTMModel(AlphaModel):
         model.summary()
         model.compile(optimizer='adam', loss='mean_squared_error')
         model.fit(x, y, epochs=200, batch_size=32)
-                
+
     def predict(self, X):
-        Xtest = X.values
-        lookback = 50
-        
-        x_test = []
-        
-        for i in range(len(Xtest)-lookback-1):
-            t = []
-            for j in range(0,lookback):
-                t.append(Xtest[[(i+j)], :])
-            x_test.append(t)
-        
-        x_test = x_test.reshape(x_test.shape[0],lookback, 2) 
-        return model.predict(x_test)
-        
+        return 0
