@@ -1,22 +1,16 @@
 import matplotlib.pyplot as plt
 import pandas as pd
-<<<<<<< HEAD
-%matplotlib inline
 from sklearn.linear_model import LinearRegression
 import numpy as np
 from regression_model import RegressionModel
 import os
 
-=======
 from sklearn.linear_model import LinearRegression
 import numpy as np
 #from regression_model import RegressionModel
 from LSTM_model import LSTMModel
 import os
 
-
-print("1")
->>>>>>> 991bd4a2c3911e8760d4847a5c36e68f10cd0bba
 def get_dataframe(filename):
     df = pd.read_csv(filename)
     df['Date'] = pd.to_datetime(df["Unnamed: 0"], dayfirst=True)
@@ -27,15 +21,9 @@ def get_dataframe(filename):
         df[col+'norm'] = df[col] / df['Settle_Price'] - 1
     return df
 
-<<<<<<< HEAD
-=======
-print("2")
->>>>>>> 991bd4a2c3911e8760d4847a5c36e68f10cd0bba
 def get_data_by_years(df, years, features, label):
     ydf = df[df.Date.map(lambda x: x.year in years)]
     return ydf[features].values, ydf[label].values
-
-print("3")
 
 def get_data(df, data_start, valid_start, test_start, data_end, features, label):
     data = {}
@@ -46,8 +34,6 @@ def get_data(df, data_start, valid_start, test_start, data_end, features, label)
     data['Xvalid'], data['Yvalid'] = get_data_by_years(df, valid_years, features, label)
     data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years,  features, label)
     return data
-
-print("4")
 
 features = ['MACD', 'Volume']
 label = 'Daily_Return'
@@ -62,7 +48,7 @@ model_class = RegressionModel
 
 model_class = LSTMModel
 
-print("5")
+
 
 for i, filename in enumerate(os.listdir(features_directory)):
     df = get_dataframe(features_directory + '/' + filename)
@@ -73,9 +59,6 @@ for i, filename in enumerate(os.listdir(features_directory)):
     output['predicted_'+str(i)] = model.predict(data['Xtest'])
     output['true_'+str(i)] = data['Ytest']
 returns_df = pd.DataFrame(output)
-
-
-print("6")
 
 from simple_portfolio import SimplePortfolio
 returns = np.array([0.01])
