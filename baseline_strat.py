@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-df = pd.read_csv('./Gold.csv')
+df = pd.read_csv('./data/Gold_6.csv')
 df = df[["EMA100Cross","Settle_Price"]]
 df.head()
 
