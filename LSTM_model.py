@@ -18,6 +18,29 @@ class LSTMModel(AlphaModel):
 
     def train(self, X, Y):
         assert len(X)==len(Y)
+        Xtrain = X.values
+        Ytrain = Y.values
+        lookback = 50
+        print("1")
+        x = []
+        y = []
+        for i in range(len(Xtrain)-lookback-1):
+            t = []
+            for j in range(0,lookback):
+                t.append(Xtrain[[(i+j)], :])
+            x.append(t)
+            y.append(Ytrain[i+ lookback])
+         x = np.array(x)
+         y = np.array(y)
+         x = x.reshape(x.shape[0],lookback, 2)
+
+        model.add(LSTM(units=30, return_sequences= True, input_shape=(x.shape[1],2)))
+        model.add(LSTM(units=30, return_sequences=True))
+        model.add(LSTM(units=30))
+        model.add(Dense(units=1))
+        model.summary()
+        model.compile(optimizer='adam', loss='mean_squared_error')
+        model.fit(x, y, epochs=200, batch_size=32)
 
     def predict(self, X):
         return 0
