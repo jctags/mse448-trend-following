@@ -30,6 +30,7 @@ def buyCrossStrat(cross_array, price_array):
 def main():
     money, money_array, unit_arry = buyCrossStrat(df["EMA100Cross"],df["Settle_Price"])
     print(money)
+    print(money_array)
 
 if __name__ == "__main__":
     main()
