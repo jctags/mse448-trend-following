@@ -35,10 +35,8 @@ def get_data_by_years(df, years, features, label):
     ydf = df[df.Date.map(lambda x: x.year in years)]
     return ydf[features].values, ydf[label].values
 
-<<<<<<< HEAD
-=======
 print("3")
->>>>>>> 991bd4a2c3911e8760d4847a5c36e68f10cd0bba
+
 def get_data(df, data_start, valid_start, test_start, data_end, features, label):
     data = {}
     train_years = list(range(data_start,  valid_start))
@@ -49,10 +47,8 @@ def get_data(df, data_start, valid_start, test_start, data_end, features, label)
     data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years,  features, label)
     return data
 
-<<<<<<< HEAD
-=======
 print("4")
->>>>>>> 991bd4a2c3911e8760d4847a5c36e68f10cd0bba
+
 features = ['MACD', 'Volume']
 label = 'Daily_Return'
 features_directory = 'data'
@@ -60,14 +56,14 @@ data_start = 1990
 valid_start = 2010
 test_start = 2014
 data_end = 2018
-<<<<<<< HEAD
+
 model_class = RegressionModel
 
-=======
+
 model_class = LSTMModel
 
 print("5")
->>>>>>> 991bd4a2c3911e8760d4847a5c36e68f10cd0bba
+
 for i, filename in enumerate(os.listdir(features_directory)):
     df = get_dataframe(features_directory + '/' + filename)
     data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
@@ -78,10 +74,9 @@ for i, filename in enumerate(os.listdir(features_directory)):
     output['true_'+str(i)] = data['Ytest']
 returns_df = pd.DataFrame(output)
 
-<<<<<<< HEAD
-=======
+
 print("6")
->>>>>>> 991bd4a2c3911e8760d4847a5c36e68f10cd0bba
+
 from simple_portfolio import SimplePortfolio
 returns = np.array([0.01])
 optimizer = SimplePortfolio(1)
