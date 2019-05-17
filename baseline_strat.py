@@ -2,10 +2,9 @@ import pandas as pd
 import numpy as np
 
 df = pd.read_csv('./data/Gold_6.csv')
-df = df[["EMA100Cross","Settle_Price"]]
-df.head()
 
 def buyCrossStrat(cross_array, price_array):
+
     units = 0
     money = 10000
     money_over_time = []
@@ -18,7 +17,7 @@ def buyCrossStrat(cross_array, price_array):
             lastprice = price_array[i]
             cond = 2
         if cond == 2:
-            if cross_array[i] == -1 or price_array[i] >= 1.10 * lastprice or price_array[i] <= 0.95 * lastprice:
+            if cross_array[i] == -1 or price_array[i] >= 1.07 * lastprice or price_array[i] <= 0.95 * lastprice:
                 money = (units) * price_array[i]
                 units =  0
                 cond = 1
@@ -28,8 +27,11 @@ def buyCrossStrat(cross_array, price_array):
     return money, money_over_time, units_over_time
 
 def main():
-    money, money_array, unit_arry = buyCrossStrat(df["EMA100Cross"],df["Settle_Price"])
-    print("Total Profit", money - 10000)
+    to_use = ["SMA5Cross", "SMA10Cross","SMA15Cross", "SMA20Cross", "SMA50Cross", "SMA100Cross",
+            "EMA10Cross", "EMA12Cross", "EMA20Cross", "EMA26Cross", "EMA50Cross", "EMA100Cross"]
+    for cross in to_use:
+        money, money_array, unit_arry = buyCrossStrat(df[cross],df["Settle_Price"])
+        print(str(cross) + "Total Profit", money - 10000)
 
 if __name__ == "__main__":
     main()

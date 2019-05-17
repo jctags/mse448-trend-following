@@ -84,7 +84,7 @@ def create_ma_cross(ma, price_array):
     return ma_cross
 
 def main():
-    df_gc6 = pd.read_csv('CHRIS-CME_GC5.csv')
+    df_gc6 = pd.read_csv('CHRIS-CME_HG6.csv')
 
     df = df_gc6[['Date','Settle', 'Volume']]
 
@@ -143,7 +143,7 @@ def main():
 
     Date = np.array(df['Date'][::-1])
     data = pd.DataFrame(raw_data, index = Date)
-    data[100:len(Date)].to_csv("Gold_5.csv")
+    data[100:len(Date)].to_csv("Copper_6.csv")
 
 if __name__ == "__main__":
     main()
