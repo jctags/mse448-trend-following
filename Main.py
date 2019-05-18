@@ -5,6 +5,8 @@ import numpy as np
 from regression_model import RegressionModel
 import os
 from LSTM_model import LSTMModel
+import re
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 def get_dataframe(filename):
     df = pd.read_csv(filename)
@@ -38,19 +40,41 @@ valid_start = 2010
 test_start = 2014
 data_end = 2018
 
-model_class = RegressionModel
+df = get_dataframe(features_directory + '/' + 'Copper_2.csv')
+data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
 
-model_class = LSTMModel
 
-for i, filename in enumerate(os.listdir(features_directory)):
-    df = get_dataframe(features_directory + '/' + filename)
-    data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
-    model = model_class()
-    model.train(data['Xtrain'], data['Ytrain'])
-    output = {}
-    output['predicted_'+str(i)] = model.predict(data['Xtest'])
-    output['true_'+str(i)] = data['Ytest']
-returns_df = pd.DataFrame(output)
+def create_dataset(Xtrain, Ytrain, look_back = 1):
+    dataX, dataY = [], []
+    for i in range(len(Xtrain)-look_back-1):
+        t = []
+        for j in range(0, look_back):
+            t.append(Xtrain[[(i+j)], :])
+        dataX.append(t)
+        dataY.append(Ytrain[i + look_back])
+    return np.array(dataX), np.array(dataY)
+
+look_back = 50
+trainX, trainY = create_dataset(data['Xtrain'], data['Ytrain'], look_back = 50)
+testX, _ = create_dataset(data['Xtest'], data['Ytest'], look_back = 50)
+trainX = trainX.reshape(trainX.shape[0], look_back, len(features))
+
+model = LSTMModel()
+model.train(trainX, trainY, look_back)
+ypred = model.predict(testX)
+print(ypred)
+
+
+#for i, filename in enumerate(os.listdir(features_directory)):
+#    if not re.match(filename, ".DS_Store"):
+#        df = get_dataframe(features_directory + '/' + filename)
+#        data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
+#        model = LSTMModel()
+#        model.train(data['Xtrain'], data['Ytrain'])
+#        output = {}
+#        output['predicted_'+str(i)] = model.predict(data['Xtest'])
+#        output['true_'+str(i)] = data['Ytest']
+#returns_df = pd.DataFrame(output)
 
 from simple_portfolio import SimplePortfolio
 returns = np.array([0.01])
