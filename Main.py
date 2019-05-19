@@ -58,6 +58,7 @@ look_back = 50
 trainX, trainY = create_dataset(data['Xtrain'], data['Ytrain'], look_back = 50)
 testX, _ = create_dataset(data['Xtest'], data['Ytest'], look_back = 50)
 trainX = trainX.reshape(trainX.shape[0], look_back, len(features))
+testX = testX.reshape(testX.shape[0], look_back, len(features))
 
 model = LSTMModel()
 model.train(trainX, trainY, look_back)
