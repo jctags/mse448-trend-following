@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 from regression_model import RegressionModel
 import os
-#from LSTM_model import LSTMModel
+from LSTM_model import LSTMModel
 import re
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
@@ -64,11 +64,11 @@ for i, filename in enumerate(os.listdir(features_directory)):
         trainX = trainX.reshape(trainX.shape[0], look_back, len(features))
         testX = testX.reshape(testX.shape[0], look_back, len(features))
         print(trainX.shape,testX.shape,trainY.shape,testY.shape)
-        # model = LSTMModel()
-        # model.train(trainX, trainY, look_back)
-        # output = {}
-        # output['predicted_'+str(i)] = model.predict(testX)
-        # output['true_'+str(i)] = data['Ytest']
+        model = LSTMModel()
+        model.train(trainX, trainY, look_back)
+        output = {}
+        output['predicted_'+str(i)] = model.predict(testX)
+        output['true_'+str(i)] = data['Ytest']
 returns_df = pd.DataFrame(output)
 
 from simple_portfolio import SimplePortfolio
