@@ -65,16 +65,16 @@ model.train(trainX, trainY, look_back)
 ypred = model.predict(testX)
 
 
-#for i, filename in enumerate(os.listdir(features_directory)):
-#    if not re.match(filename, ".DS_Store"):
-#        df = get_dataframe(features_directory + '/' + filename)
-#        data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
-#        model = LSTMModel()
-#        model.train(data['Xtrain'], data['Ytrain'])
-#        output = {}
-#        output['predicted_'+str(i)] = model.predict(data['Xtest'])
-#        output['true_'+str(i)] = data['Ytest']
-#returns_df = pd.DataFrame(output)
+for i, filename in enumerate(os.listdir(features_directory)):
+    if not re.match(filename, ".DS_Store"):
+        df = get_dataframe(features_directory + '/' + filename)
+        data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
+        model = LSTMModel()
+        model.train(data['Xtrain'], data['Ytrain'])
+        output = {}
+        output['predicted_'+str(i)] = model.predict(data['Xtest'])
+        output['true_'+str(i)] = data['Ytest']
+returns_df = pd.DataFrame(output)
 
 from simple_portfolio import SimplePortfolio
 returns = np.array([0.01])
