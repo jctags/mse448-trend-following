@@ -55,24 +55,19 @@ def create_dataset(Xtrain, Ytrain, look_back = 1):
     return np.array(dataX), np.array(dataY)
 
 look_back = 50
-trainX, trainY = create_dataset(data['Xtrain'], data['Ytrain'], look_back = 50)
-testX, _ = create_dataset(data['Xtest'], data['Ytest'], look_back = 50)
-trainX = trainX.reshape(trainX.shape[0], look_back, len(features))
-testX = testX.reshape(testX.shape[0], look_back, len(features))
-
-model = LSTMModel()
-model.train(trainX, trainY, look_back)
-ypred = model.predict(testX)
-
 
 for i, filename in enumerate(os.listdir(features_directory)):
     if not re.match(filename, ".DS_Store"):
         df = get_dataframe(features_directory + '/' + filename)
         data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
         model = LSTMModel()
-        model.train(data['Xtrain'], data['Ytrain'])
+        trainX, trainY = create_dataset(data['Xtrain'], data['Ytrain'], look_back = 50)
+        testX, _ = create_dataset(data['Xtest'], data['Ytest'], look_back = 50)
+        trainX = trainX.reshape(trainX.shape[0], look_back, len(features))
+        testX = testX.reshape(testX.shape[0], look_back, len(features))
+        model.train(trainX, trainY, look_back)
         output = {}
-        output['predicted_'+str(i)] = model.predict(data['Xtest'])
+        output['predicted_'+str(i)] = model.predict(testX)
         output['true_'+str(i)] = data['Ytest']
 returns_df = pd.DataFrame(output)
 
