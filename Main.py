@@ -18,27 +18,26 @@ def get_dataframe(filename):
         df[col+'norm'] = df[col] / df['Settle_Price'] - 1
     return df
 
-def get_data_by_years(df, years, features, label):
-    ydf = df[df.Date.map(lambda x: x.year in years)]
+def get_data_by_percentile(df, start, end, features, label):
+    s = np.floor(len(df)*start)
+    e = np.floor(len(df)*end)-1
+    ydf = df[s:e,:]
     return ydf[features].values, ydf[label].values
 
 def get_data(df, data_start, valid_start, test_start, data_end, features, label):
     data = {}
-    train_years = list(range(data_start,  valid_start))
-    valid_years = list(range(valid_start, test_start))
-    test_years  = list(range(test_start,  data_end))
-    data['Xtrain'], data['Ytrain'] = get_data_by_years(df, train_years, features, label)
-    data['Xvalid'], data['Yvalid'] = get_data_by_years(df, valid_years, features, label)
-    data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years,  features, label)
+    data['Xtrain'], data['Ytrain'] = get_data_by_percentile(df, data_start, valid_start,features, label)
+    data['Xvalid'], data['Yvalid'] = get_data_by_percentile(df, valid_start, test_start,features, label)
+    data['Xtest'],  data['Ytest']  = get_data_by_percentile(df, test_start, data_end, features, label)
     return data
 
 features = ['MACD', 'Volume']
 label = 'Daily_Return'
 features_directory = 'data'
-data_start = 1990
-valid_start = 2010
-test_start = 2014
-data_end = 2018
+data_start = 0.00
+valid_start = 0.70
+test_start = 0.85
+data_end = 1.00
 
 df = get_dataframe(features_directory + '/' + 'Copper_2.csv')
 data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
