@@ -63,7 +63,6 @@ testX = testX.reshape(testX.shape[0], look_back, len(features))
 model = LSTMModel()
 model.train(trainX, trainY, look_back)
 ypred = model.predict(testX)
-print(ypred)
 
 
 #for i, filename in enumerate(os.listdir(features_directory)):
