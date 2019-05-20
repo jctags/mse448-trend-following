@@ -22,7 +22,7 @@ class LSTMModel(AlphaModel):
         self.model.add(Dense(units=1))
         self.model.summary()
         self.model.compile(loss='mse', optimizer='adam')
-        self.model.fit(X, Y, epochs=10, batch_size=32)
+        self.model.fit(X, Y, epochs=50, batch_size=32)
 
     def predict(self, X):
         return self.model.predict(X)
