@@ -4,7 +4,7 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 from regression_model import RegressionModel
 import os
-from LSTM_model import LSTMModel
+#from LSTM_model import LSTMModel
 import re
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
@@ -19,9 +19,9 @@ def get_dataframe(filename):
     return df
 
 def get_data_by_percentile(df, start, end, features, label):
-    s = np.floor(len(df)*start)
-    e = np.floor(len(df)*end)-1
-    ydf = df[s:e,:]
+    s = int(np.floor(len(df)*start))
+    e = int(np.floor(len(df)*end)-1)
+    ydf = df[s:e]
     return ydf[features].values, ydf[label].values
 
 def get_data(df, data_start, valid_start, test_start, data_end, features, label):
@@ -59,15 +59,16 @@ for i, filename in enumerate(os.listdir(features_directory)):
     if not re.match(filename, ".DS_Store"):
         df = get_dataframe(features_directory + '/' + filename)
         data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
-        model = LSTMModel()
         trainX, trainY = create_dataset(data['Xtrain'], data['Ytrain'], look_back = 50)
-        testX, _ = create_dataset(data['Xtest'], data['Ytest'], look_back = 50)
+        testX, testY = create_dataset(data['Xtest'], data['Ytest'], look_back = 50)
         trainX = trainX.reshape(trainX.shape[0], look_back, len(features))
         testX = testX.reshape(testX.shape[0], look_back, len(features))
-        model.train(trainX, trainY, look_back)
-        output = {}
-        output['predicted_'+str(i)] = model.predict(testX)
-        output['true_'+str(i)] = data['Ytest']
+        print(trainX.shape,testX.shape,trainY.shape,testY.shape)
+        # model = LSTMModel()
+        # model.train(trainX, trainY, look_back)
+        # output = {}
+        # output['predicted_'+str(i)] = model.predict(testX)
+        # output['true_'+str(i)] = data['Ytest']
 returns_df = pd.DataFrame(output)
 
 from simple_portfolio import SimplePortfolio
