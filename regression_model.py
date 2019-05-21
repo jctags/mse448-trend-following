@@ -15,7 +15,7 @@ class RegressionModel(AlphaModel):
         elif (n == 3):
             self.model = Lasso()
         else:
-            self.model = LinearRegression()
+        	self.model = LinearRegression()
 
     def getModelInfo(self):
         if(self.regularization == 1):
