@@ -4,7 +4,9 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 from regression_model import RegressionModel
 import os
-#from LSTM_model import LSTMModel
+from LSTM_model import LSTMModel
+import re
+from sklearn.preprocessing import LabelEncoder, MinMaxScaler
 
 def get_dataframe(filename):
     df = pd.read_csv(filename)
@@ -32,10 +34,10 @@ def get_data(df, data_start, valid_start, test_start, data_end, features, label)
 features = ['MACD', 'Volume']
 label = 'Daily_Return'
 features_directory = 'data'
-data_start = 1990
-valid_start = 2014
-test_start = 2016
-data_end = 2018
+data_start = 0.00
+valid_start = 0.70
+test_start = 0.85
+data_end = 1.00
 
 df = get_dataframe(features_directory + '/' + 'Copper_2.csv')
 data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
@@ -69,11 +71,9 @@ for i, filename in enumerate(os.listdir(features_directory)):
         output['true_'+str(i)] = data['Ytest']
 returns_df = pd.DataFrame(output)
 
-'''
 from simple_portfolio import SimplePortfolio
 returns = np.array([0.01])
 optimizer = SimplePortfolio(1)
 #print(optimizer.optimize(returns, 1e-5))
 vals = returns_df[['predicted_0']].values[0:5,:]
 np.apply_along_axis(lambda x: optimizer.optimize(x, 1e-6), 1, vals)
-'''
