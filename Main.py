@@ -71,3 +71,5 @@ for i, filename in enumerate(os.listdir(features_directory)):
         output['true_'+str(i)] = data['Ytest']
 returns_df = pd.DataFrame(output)
 
+returns_df.to_csv('predicted_result')
+
