@@ -69,6 +69,7 @@ for i, filename in enumerate(os.listdir(features_directory)):
         output = {}
         output['predicted_'+str(i)] = model.predict(testX)
         output['true_'+str(i)] = data['Ytest']
+        print(output)
 returns_df = pd.DataFrame(output)
 
 returns_df.to_csv('predicted_result')
