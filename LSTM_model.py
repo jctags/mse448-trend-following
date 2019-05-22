@@ -17,12 +17,11 @@ class LSTMModel(AlphaModel):
         assert len(X)==len(Y)
         self.model = Sequential()
         self.model.add(LSTM(units=30, return_sequences= True, input_shape=(X.shape[1],2)))
-        self.model.add(LSTM(units=30, return_sequences=True))
         self.model.add(LSTM(units=30))
         self.model.add(Dense(units=1))
         self.model.summary()
         self.model.compile(loss='mse', optimizer='adam')
-        self.model.fit(X, Y, epochs = 50, batch_size=32)
+        self.model.fit(X, Y, epochs = 10, batch_size=32)
 
     def predict(self, X):
         return self.model.predict(X)
