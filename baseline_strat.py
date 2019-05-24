@@ -2,9 +2,8 @@ import pandas as pd
 import numpy as np
 import os
 
-def baseline1(unit,money,cross_array, price_array,limit_sell,stop_loss,leverage):
+def baseline1(unit,money,cross_array, price_array,limit_sell,stop_loss):
     principal = money
-    money = money*leverage
     money_over_time = []
     cond = 1
     annual_profit = 0.0
@@ -43,9 +42,8 @@ def baseline1(unit,money,cross_array, price_array,limit_sell,stop_loss,leverage)
 
     return money, money_over_time, total_profit, annual_profit
 
-def baseline2(unit,money,cross_array, price_array,leverage):
+def baseline2(unit,money,cross_array, price_array):
     principal = money
-    money = money*leverage
     money_over_time = []
     cond = 1
     annual_profit = 0.0
@@ -76,9 +74,8 @@ def baseline2(unit,money,cross_array, price_array,leverage):
 
     return money, money_over_time, total_profit, annual_profit
 
-def baseline3(unit,money,cross_array, price_array,limit_sell,stop_loss,leverage):
+def baseline3(unit,money,cross_array, price_array,limit_sell,stop_loss):
     principal = money
-    money = money*leverage
     money_over_time = []
     cond = 1
     annual_profit = 0.0
@@ -127,7 +124,7 @@ def sharpe_calc(money_over_time_array):
 
 def main():
 
-    leverage = 5
+    leverage = 10
     nday = 500
     directory = 'data'
     starting_money = 1000000.0 #1million
@@ -155,16 +152,15 @@ def main():
         for df in list_of_df:
             #Baseline1: Fixing Stop Losses and Limt Sell
             money1, money_array1, total_profit2, annual_profit1 = baseline1(unit = 0.0,money = starting_money/len(list_of_df),
-                cross_array = df[cross].tolist(), price_array = df["Settle_Price"].tolist(),limit_sell = take_profit,stop_loss = cut_loss,
-                leverage = leverage)
+                cross_array = df[cross].tolist(), price_array = df["Settle_Price"].tolist(),limit_sell = take_profit,stop_loss = cut_loss)
 
             #Baseline2: Sell only by crosses
             money2, money_array2, total_profit2, annual_profit2 = baseline2(unit = 0.0,money = starting_money/len(list_of_df),cross_array = df[cross].tolist(),
-                price_array = df["Settle_Price"].tolist(), leverage = leverage)
+                price_array = df["Settle_Price"].tolist())
 
             #Baseline3: Moving Stop losses and limit sell
             money3, money_array3, total_profit3, annual_profit3 = baseline3(unit = 0.0,money = starting_money/len(list_of_df),cross_array = df[cross].tolist(),
-                price_array = df["Settle_Price"].tolist(),limit_sell = take_profit,stop_loss = cut_loss, leverage = leverage)
+                price_array = df["Settle_Price"].tolist(),limit_sell = take_profit,stop_loss = cut_loss)
 
             strat1 += money_array1
             strat2 += money_array2
@@ -173,19 +169,19 @@ def main():
         print('Baseline Strategy 1: Trading based on crosses with fixed stop losses and limit sells')
         sharpe1,avg_annual_profit1 = sharpe_calc(strat1)
         print('Sharpe Ratio:',sharpe1)
-        print('Profit:',avg_annual_profit1*100,'%')
+        print('Profit:',avg_annual_profit1*leverage*100,'%')
         print('='*25)
 
         print('Baseline Strategy 2: Trading only based on crosses')
         sharpe2,avg_annual_profit2 = sharpe_calc(strat2)
         print('Sharpe Ratio:',sharpe2)
-        print('Profit:',avg_annual_profit2*100,'%')
+        print('Profit:',avg_annual_profit2*leverage*100,'%')
         print('='*25)
 
         print('Baseline Strategy 3: Trading based on crosses with moving stop losses and limit sells')
         sharpe3,avg_annual_profit3 = sharpe_calc(strat3)
         print('Sharpe Ratio:',sharpe3)
-        print('Profit:',avg_annual_profit3*100,'%')
+        print('Profit:',avg_annual_profit3*leverage*100,'%')
 
 
 if __name__ == "__main__":
