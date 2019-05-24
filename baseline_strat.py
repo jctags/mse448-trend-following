@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import os
 
 def baseline1(unit,money,cross_array, price_array,limit_sell,stop_loss):
     principal = money
@@ -116,45 +117,70 @@ def sharpe_calc(money_over_time_array):
     return_array = []
     for i in range(len(money_over_time_array)):
         if i != len(money_over_time_array) - 1:
-            return_array.append() = money_over_time_array[i+1]/money_over_time_array[i]-1
+            return_array.append(money_over_time_array[i+1]/money_over_time_array[i]-1)
 
-    sharpe = sqrt(252)*np.mean(return_array)/np.std(return_array)
+    sharpe = np.sqrt(252)*np.mean(return_array)/np.std(return_array)
+    avg_annual_profit = np.sqrt(252)*np.mean(return_array)
 
-    return sharpe
+    return sharpe,avg_annual_profit
 
 def main():
 
-features_directory = 'data'
-    for i, filename in enumerate(os.listdir(features_directory)):
-        if i == 1 and not re.match(filename, ".DS_Store"):
-            list_of_df.append(pd.read_csv('./data/Gold_6.csv'))
-
+    nday = 500
+    directory = 'data'
+    starting_money = 1000000.0 #1million
+    num_file = 0
     to_use = ["SMA5Cross", "SMA10Cross","SMA15Cross", "SMA20Cross", "SMA50Cross", "SMA100Cross",
-            "EMA10Cross", "EMA12Cross", "EMA20Cross", "EMA26Cross", "EMA50Cross", "EMA100Cross"]
-
+        "EMA10Cross", "EMA12Cross", "EMA20Cross", "EMA26Cross", "EMA50Cross", "EMA100Cross"]
     take_profit = 0.1
     cut_loss = 0.05
+    list_of_df = []
+
+    for file in os.listdir(directory):
+        filename = os.fsdecode(file)
+        if filename.endswith(".csv"):
+            num_file += 1
+            df = pd.read_csv('data/'+str(filename))
+            list_of_df.append(df.tail(nday))
+
+    strat1 = np.zeros(nday)
+    strat2 = np.zeros(nday)
+    strat3 = np.zeros(nday)
 
     for cross in to_use:
-        print('='*25)
+        print('*'*100)
         print('Cross:', cross)
         for df in list_of_df:
             #Baseline1: Fixing Stop Losses and Limt Sell
-            print('Baseline Strategy 1: Trading based on crosses with fixed stop losses and limit sells')
-            money, money_array, total_profit, annual_profit = baseline1(unit = 0.0,money = 100, cross_array = df[cross], price_array = df["Settle_Price"],limit_sell = take_profit,stop_loss = cut_loss)
+            money1, money_array1, total_profit2, annual_profit1 = baseline1(unit = 0.0,money = starting_money/len(list_of_df), cross_array = df[cross].tolist(), price_array = df["Settle_Price"].tolist(),limit_sell = take_profit,stop_loss = cut_loss)
 
             #Baseline2: Sell only by crosses
-            print('Baseline Strategy 2: Trading only based on crosses')
-            money, money_array, total_profit, annual_profit = baseline2(unit = 0.0,money = 100,cross_array = df[cross], price_array = df["Settle_Price"])
+            money2, money_array2, total_profit2, annual_profit2 = baseline2(unit = 0.0,money = starting_money/len(list_of_df),cross_array = df[cross].tolist(), price_array = df["Settle_Price"].tolist())
 
             #Baseline3: Moving Stop losses and limit sell
-            print('Baseline Strategy 3: Trading based on crosses with moving stop losses and limit sells')
-            money, money_array, total_profit, annual_profit = baseline3(unit = 0.0,money = 100,cross_array = df[cross], price_array = df["Settle_Price"],limit_sell = take_profit,stop_loss = cut_loss)
+            money3, money_array3, total_profit3, annual_profit3 = baseline3(unit = 0.0,money = starting_money/len(list_of_df),cross_array = df[cross].tolist(), price_array = df["Settle_Price"].tolist(),limit_sell = take_profit,stop_loss = cut_loss)
 
-        print('Baseline Strategy1 Sharpe Ratio:',)
-        print('Baseline Strategy2 Sharpe Ratio:',)
-        print('Baseline Strategy3 Sharpe Ratio:',)
+            strat1 += money_array1
+            strat2 += money_array2
+            strat3 += money_array3
+
+        print('Baseline Strategy 1: Trading based on crosses with fixed stop losses and limit sells')
+        sharpe1,avg_annual_profit1 = sharpe_calc(strat1)
+        print('Sharpe Ratio:',sharpe1)
+        print('Profit:',avg_annual_profit1*100,'%')
         print('='*25)
+
+        print('Baseline Strategy 2: Trading only based on crosses')
+        sharpe2,avg_annual_profit2 = sharpe_calc(strat2)
+        print('Sharpe Ratio:',sharpe2)
+        print('Profit:',avg_annual_profit2*100,'%')
+        print('='*25)
+
+        print('Baseline Strategy 3: Trading based on crosses with moving stop losses and limit sells')
+        sharpe3,avg_annual_profit3 = sharpe_calc(strat3)
+        print('Sharpe Ratio:',sharpe3)
+        print('Profit:',avg_annual_profit3*100,'%')
+
 
 if __name__ == "__main__":
     main()
