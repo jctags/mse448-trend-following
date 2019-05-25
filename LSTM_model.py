@@ -16,12 +16,14 @@ class LSTMModel(AlphaModel):
     def train(self, X, Y, look_back):
         assert len(X)==len(Y)
         self.model = Sequential()
-        self.model.add(LSTM(units=30, return_sequences= True, input_shape=(X.shape[1],2)))
+        self.model.add(LSTM(units=30, return_sequences= True, input_shape=(X.shape[1], X.shape[2])))
         self.model.add(LSTM(units=30))
         self.model.add(Dense(units=1))
         self.model.summary()
         self.model.compile(loss='mse', optimizer='adam')
-        self.model.fit(X, Y, epochs = 10, batch_size=32)
+        self.model.fit(X, Y, epochs = 1, batch_size=32)
+
+#Early stopping
 
     def predict(self, X):
         return self.model.predict(X)

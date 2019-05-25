@@ -18,30 +18,46 @@ def get_dataframe(filename):
         df[col+'norm'] = df[col] / df['Settle_Price'] - 1
     return df
 
-def get_data_by_percentile(df, start, end, features, label):
-    s = int(np.floor(len(df)*start))
-    e = int(np.floor(len(df)*end)-1)
-    ydf = df[s:e]
+def get_data_by_years(df, years, features, label):
+    ydf = df[df.Date.map(lambda x: x.year in years)]
     return ydf[features].values, ydf[label].values
 
-def get_data(df, data_start, valid_start, test_start, data_end, features, label):
+def get_data_not_by_years(df, years, features, label):
+    ydf = df[df.Date.map(lambda x: x.year not in years)]
+    return ydf[features].values, ydf[label].values
+
+def get_data(df, valid_start, test_start, data_end, features, label):
     data = {}
-    data['Xtrain'], data['Ytrain'] = get_data_by_percentile(df, data_start, valid_start,features, label)
-    data['Xvalid'], data['Yvalid'] = get_data_by_percentile(df, valid_start, test_start,features, label)
-    data['Xtest'],  data['Ytest']  = get_data_by_percentile(df, test_start, data_end, features, label)
+    train_years = list(range(valid_start, test_start))
+    valid_years = list(range(valid_start, test_start))
+    test_years  = list(range(test_start,  data_end))
+    data['Xtrain'], data['Ytrain'] = get_data_not_by_years(df, train_years, features, label)
+    data['Xvalid'], data['Yvalid'] = get_data_by_years(df, valid_years, features, label)
+    data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years, features, label)
     return data
 
-features = ['MACD', 'Volume']
+features = features = [
+    'EMA10norm',
+    'EMA100norm',
+    'EMA12norm',
+    'EMA20norm',
+    'EMA26norm',
+    'EMA50norm',
+    'SMA10norm',
+    'SMA100norm',
+    'SMA15norm',
+    'SMA20norm',
+    'SMA5norm',
+    'SMA50norm',
+    'MACD',
+    'Volume'
+]
 label = 'Daily_Return'
 features_directory = 'data'
-data_start = 0.00
-valid_start = 0.70
-test_start = 0.85
-data_end = 1.00
 
-df = get_dataframe(features_directory + '/' + 'Copper_2.csv')
-data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
-
+valid_start = 2017
+test_start = 2017
+data_end = 2019
 
 def create_dataset(Xtrain, Ytrain, look_back = 1):
     dataX, dataY = [], []
@@ -56,21 +72,16 @@ def create_dataset(Xtrain, Ytrain, look_back = 1):
 look_back = 50
 
 for i, filename in enumerate(os.listdir(features_directory)):
-    if i == 1 and not re.match(filename, ".DS_Store"):
+    if not re.match(filename, ".DS_Store"):
         df = get_dataframe(features_directory + '/' + filename)
-        data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
+        data = get_data(df, valid_start, test_start, data_end, features, label)
         trainX, trainY = create_dataset(data['Xtrain'], data['Ytrain'], look_back = 50)
         testX, testY = create_dataset(data['Xtest'], data['Ytest'], look_back = 50)
         trainX = trainX.reshape(trainX.shape[0], look_back, len(features))
         testX = testX.reshape(testX.shape[0], look_back, len(features))
-        print(trainX.shape,testX.shape,trainY.shape,testY.shape)
+        print(trainX.shape, trainY.shape, testX.shape, testY.shape)
         model = LSTMModel()
         model.train(trainX, trainY, look_back)
-        output = {}
-        output['predicted_'+str(i)] = model.predict(testX)
-        output['true_'+str(i)] = data['Ytest']
-        print(output)
-returns_df = pd.DataFrame(output)
-
-returns_df.to_csv('predicted_result')
-
+        predictedY = model.predict(testX)
+        return_df = pd.DataFrame(predictedY)
+        return_df.to_csv('predicted_result' + '_' + filename)
