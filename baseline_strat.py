@@ -124,7 +124,6 @@ def sharpe_calc(money_over_time_array):
 
 def main():
 
-    leverage = 10
     nday = 500
     directory = 'data'
     starting_money = 1000000.0 #1million
@@ -142,11 +141,19 @@ def main():
             df = pd.read_csv('data/'+str(filename))
             list_of_df.append(df.tail(nday))
 
-    strat1 = np.zeros(nday)
-    strat2 = np.zeros(nday)
-    strat3 = np.zeros(nday)
+    longonly = np.zeros(nday)
+
+    for df in list_of_df:
+        price = df["Settle_Price"].tolist()
+        dummy = starting_money/(num_file*price[0])
+        longonly += [x*dummy for x in price]
+    print(longonly)
+    sharpeL,profL = sharpe_calc(longonly)
 
     for cross in to_use:
+        strat1 = np.zeros(nday)
+        strat2 = np.zeros(nday)
+        strat3 = np.zeros(nday)
         print('*'*100)
         print('Cross:', cross)
         for df in list_of_df:
@@ -168,20 +175,26 @@ def main():
 
         print('Baseline Strategy 1: Trading based on crosses with fixed stop losses and limit sells')
         sharpe1,avg_annual_profit1 = sharpe_calc(strat1)
+        max_lev1 = (avg_annual_profit1/sharpe1)/(profL/sharpeL)
+        print(max_lev1)
         print('Sharpe Ratio:',sharpe1)
-        print('Profit:',avg_annual_profit1*leverage*100,'%')
+        print('Profit:',avg_annual_profit1*max_lev1*100,'%')
         print('='*25)
 
         print('Baseline Strategy 2: Trading only based on crosses')
         sharpe2,avg_annual_profit2 = sharpe_calc(strat2)
+        max_lev2 = (avg_annual_profit2/sharpe2)/(profL/sharpeL)
+        print(max_lev2)
         print('Sharpe Ratio:',sharpe2)
-        print('Profit:',avg_annual_profit2*leverage*100,'%')
+        print('Profit:',avg_annual_profit2*max_lev2*100,'%')
         print('='*25)
 
         print('Baseline Strategy 3: Trading based on crosses with moving stop losses and limit sells')
         sharpe3,avg_annual_profit3 = sharpe_calc(strat3)
+        max_lev3 = (avg_annual_profit3/sharpe3)/(profL/sharpeL)
+        print(max_lev3)
         print('Sharpe Ratio:',sharpe3)
-        print('Profit:',avg_annual_profit3*leverage*100,'%')
+        print('Profit:',avg_annual_profit3*max_lev3*100,'%')
 
 
 if __name__ == "__main__":
