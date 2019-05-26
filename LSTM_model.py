@@ -17,17 +17,18 @@ class LSTMModel(AlphaModel):
 
     def train(self, X, Y, look_back):
         assert len(X) == len(Y)
-        self.model.add(LSTM(30, input_shape=(X.shape[1], X.shape[2]), return_sequences = True))
+        self.model.add(LSTM(units=30, input_shape=(X.shape[1], X.shape[2]), return_sequences = True))
         self.model.add(Dropout(0.5))
         self.model.add(LSTM(units=30, return_sequences = True))
         self.model.add(Dropout(0.5))
         self.model.add(LSTM(units=30))
         self.model.add(Dropout(0.5))
         self.model.add(Dense(units = 1))
+        self.model.add(Activation('linear'))
         self.model.summary()
 
-        adam = optimizers.Adam(lr = 0.001, clipvalue = 0.25)
-        self.model.compile(loss = 'mse', optimizer = adam)
+        adam = optimizers.Adam(lr = 0.001, clipvalue = 0.5)
+        self.model.compile(loss = 'mse', optimizer = 'adagrad')
         es = EarlyStopping(monitor='val_loss', mode='min', verbose=1)
         self.model.fit(X, Y, epochs = 2, batch_size = 32, callbacks = [es])
 
