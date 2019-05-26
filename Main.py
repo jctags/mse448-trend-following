@@ -4,6 +4,7 @@ from sklearn.linear_model import LinearRegression
 import numpy as np
 from regression_model import RegressionModel
 import os
+import glob
 from LSTM_model import LSTMModel
 import re
 from sklearn.preprocessing import LabelEncoder, MinMaxScaler
@@ -36,29 +37,6 @@ def get_data(df, valid_start, test_start, data_end, features, label):
     data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years, features, label)
     return data
 
-features = features = [
-    'EMA10norm',
-    'EMA100norm',
-    'EMA12norm',
-    'EMA20norm',
-    'EMA26norm',
-    'EMA50norm',
-    'SMA10norm',
-    'SMA100norm',
-    'SMA15norm',
-    'SMA20norm',
-    'SMA5norm',
-    'SMA50norm',
-    'MACD',
-    'Volume'
-]
-label = 'Daily_Return'
-features_directory = 'data'
-
-valid_start = 2017
-test_start = 2017
-data_end = 2019
-
 def create_dataset(Xtrain, Ytrain, look_back = 1):
     dataX, dataY = [], []
     for i in range(len(Xtrain)-look_back-1):
@@ -69,19 +47,45 @@ def create_dataset(Xtrain, Ytrain, look_back = 1):
         dataY.append(Ytrain[i + look_back])
     return np.array(dataX), np.array(dataY)
 
-look_back = 50
 
-for i, filename in enumerate(os.listdir(features_directory)):
-    if not re.match(filename, ".DS_Store"):
-        df = get_dataframe(features_directory + '/' + filename)
+def main():
+    features = [
+        'EMA10norm',
+        'EMA100norm',
+        'EMA12norm',
+        'EMA20norm',
+        'EMA26norm',
+        'EMA50norm',
+        'SMA10norm',
+        'SMA100norm',
+        'SMA15norm',
+        'SMA20norm',
+        'SMA5norm',
+        'SMA50norm',
+        'MACD',
+        'Volume'
+    ]
+    label = 'Settle_Price'
+    features_directory = 'data'
+
+    valid_start = 2017
+    test_start = 2017
+    data_end = 2019
+    look_back = 10
+    for i, filename in enumerate(glob.glob("data/Curde_Oil_1.csv")):
+        df = get_dataframe(filename)
         data = get_data(df, valid_start, test_start, data_end, features, label)
-        trainX, trainY = create_dataset(data['Xtrain'], data['Ytrain'], look_back = 50)
-        testX, testY = create_dataset(data['Xtest'], data['Ytest'], look_back = 50)
+        trainX, trainY = create_dataset(data['Xtrain'], data['Ytrain'], look_back)
+        testX, testY = create_dataset(data['Xtest'], data['Ytest'], look_back)
         trainX = trainX.reshape(trainX.shape[0], look_back, len(features))
         testX = testX.reshape(testX.shape[0], look_back, len(features))
         print(trainX.shape, trainY.shape, testX.shape, testY.shape)
         model = LSTMModel()
         model.train(trainX, trainY, look_back)
         predictedY = model.predict(testX)
+        print(predictedY)
         return_df = pd.DataFrame(predictedY)
-        return_df.to_csv('predicted_result' + '_' + filename)
+        return_df.to_csv('predicted_price' + '_' + '1')
+
+if __name__ == "__main__":
+    main()
