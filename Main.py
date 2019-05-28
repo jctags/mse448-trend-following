@@ -98,6 +98,8 @@ def main():
 
     for i, df in enumerate(dfs):
         data, date = get_data(df, valid_start, test_start, data_end, features, label)
+        actual_returns[str(i)] = data['Ytest'].ravel()
+        train_returns[str(i)] = data['Ytrain'].ravel()
         data['Xtrain'] = scale.fit_transform(data['Xtrain'])
         data['Ytrain'] = scale.fit_transform(data['Ytrain'].reshape(-1,1))
         data['Xtest'] = scale.fit_transform(data['Xtest'])
@@ -110,17 +112,18 @@ def main():
         y_pred = model.predict(testX)
         y_pred = scale.inverse_transform(y_pred).ravel()
         predicted_returns[str(i)] = y_pred
-        actual_returns[str(i)] = data['Ytest']
-        train_returns[str(i)] = data['Ytrain']
-        date['test'] = np.array(date['test'][look_back + 1:]).astype(str)
+        # date['test'] = np.array(date['test'][look_back + 1:]).astype(str)
         # pred = np.vstack((predictedY, date['test']))
         # pred = np.transpose(pred)
         # pred_df = pd.DataFrame(pred)
         # pred_df.to_csv('LSTM_output/predicted_price_' + filename[5:])
 
     pred_df = pd.DataFrame(predicted_returns)
-    pred_df.to_csv('LSTM_output/predicted_price')
+    pred_df.to_csv('LSTM_output/predicted_return_ES')
     actual_df = pd.DataFrame(actual_returns)
+    train_df = pd.DataFrame(train_returns)
+    train_df.to_csv('LSTM_output/train_return.csv')
+    actual_df.to_csv('LSTM_output/actual_return.csv')
 
 if __name__ == "__main__":
     main()
