@@ -99,8 +99,10 @@ for i, df in enumerate(dfs):
     train_returns[str(i)] = data['Ytrain']
 
 cov = np.cov(pd.DataFrame(train_returns).values.T)
-
+print(cov)
 n = len(train_returns.keys())
+
+print(n)
 
 opt = SimplePortfolio(n)
 desired_variance = (0.001)**2
@@ -119,6 +121,8 @@ naive_returns = []
 naive_allocation = np.ones(n)
 naive_allocation = naive_allocation/np.sum(naive_allocation)
 allocations = []
+
+print(len(pred_df))
 for i in range(len(pred_df)):
     naive_return = np.dot(naive_allocation, actual_df.iloc[i,:].values)
     naive_value *= (1+naive_return)
@@ -132,11 +136,11 @@ for i in range(len(pred_df)):
     portfolio_value *= (1+p_return)
     portfolio_over_time.append(portfolio_value)
 
-print portfolio_value
-print naive_value
+print(portfolio_value)
+print(naive_value)
 
 plt.plot(portfolio_over_time)
 plt.plot(naive_over_time)
 plt.show()
 
-import pdb; pdb.set_trace()
+# import pdb; pdb.set_trace()
