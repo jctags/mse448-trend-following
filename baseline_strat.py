@@ -118,7 +118,7 @@ def sharpe_calc(money_over_time_array):
             return_array.append(money_over_time_array[i+1]/money_over_time_array[i]-1)
 
     sharpe = np.sqrt(252)*np.mean(return_array)/np.std(return_array)
-    avg_annual_profit = np.sqrt(252)*np.mean(return_array)
+    avg_annual_profit = 252*np.mean(return_array)
 
     return sharpe,avg_annual_profit
 
