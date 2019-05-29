@@ -15,7 +15,7 @@ from simple_portfolio import SimplePortfolio
 print("Loading Dataframes")
 
 data_directory = 'LSTM_output'
-pred_df = pd.read_csv(data_directory + '/' + 'predicted_return.csv')
+pred_df = pd.read_csv(data_directory + '/' + 'predicted_return_ES.csv')
 pred_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
 actual_df = pd.read_csv(data_directory + '/' + 'actual_return.csv')
 actual_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
@@ -59,5 +59,5 @@ print(portfolio_value)
 print(naive_value)
 
 plt.plot(portfolio_over_time)
-plt.plot(naive_over_time)
+#plt.plot(naive_over_time)
 plt.show()

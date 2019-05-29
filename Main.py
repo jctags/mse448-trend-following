@@ -60,7 +60,7 @@ def main():
         'SMA5',
         'SMA50',
     ]
-    label = 'Daily_Return'
+    label = 'Settle_Price'
     data_directory = 'data'
     valid_start = 2017
     test_start = 2017
@@ -119,11 +119,11 @@ def main():
         # pred_df.to_csv('LSTM_output/predicted_price_' + filename[5:])
 
     pred_df = pd.DataFrame(predicted_returns)
-    pred_df.to_csv('LSTM_output/predicted_return_ES')
+    pred_df.to_csv('LSTM_output/predicted_price.csv')
     actual_df = pd.DataFrame(actual_returns)
     train_df = pd.DataFrame(train_returns)
-    train_df.to_csv('LSTM_output/train_return.csv')
-    actual_df.to_csv('LSTM_output/actual_return.csv')
+    train_df.to_csv('LSTM_output/train_price.csv')
+    actual_df.to_csv('LSTM_output/actual_price.csv')
 
 if __name__ == "__main__":
     main()
