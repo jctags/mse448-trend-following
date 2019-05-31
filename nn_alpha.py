@@ -8,11 +8,22 @@ import torch.nn.functional as F
 
 class NeuralNetwork(AlphaModel):
     def __init__(self):
-        self.model = Sequential()
+        self.model = torch.nn.Sequential()
 
-    def train(self, X, Y):
-        Xtrain = torch.tensor((X.values), dtype=torch.float)
-        Ytrain = torch.tensor(([Y.values]), dtype=torch.float)
+    def train(self, X, Y, Xvalid=None, Yvalid=None):
+        if Xvalid is not None and Yvalid is not None:
+            use_validation = True
+            print("USING VALIDATION SET FOR STOPPING")
+        else:
+            use_validation = False
+
+        if use_validation:
+            Xvalid = torch.tensor(Xvalid, dtype=torch.float)
+            Yvalid = torch.tensor(Yvalid, dtype=torch.float)
+
+        Xtrain = torch.tensor(X, dtype=torch.float)
+        Ytrain = torch.tensor(Y, dtype=torch.float)
+
         N, D_in, H1, H2, H3, D_out = 64, 12, 100, 50, 20, 1
 
         self.model = torch.nn.Sequential(
@@ -25,42 +36,63 @@ class NeuralNetwork(AlphaModel):
             torch.nn.Linear(H3, D_out),
             )
 
-        loss_fn = torch.nn.MSELoss(reduction = 'sum')
+        loss_fn = torch.nn.MSELoss(reduction = 'mean')
 
 
         learning_rate =  5 * 1e-6
 
-        optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+        optimizer = torch.optim.Adam(self.model.parameters(), lr=learning_rate)
 
-        for t in range(10000):
-    # Forward pass: compute predicted y by passing x to the model.
-            y_pred = model(Xtrain)
 
-    # Compute and print loss.
+        if use_validation:
+            prev_valid_loss = float('inf')
+        else:
+            prev_loss = float('inf')
+
+        conv_error = 1e-5
+
+        t=0
+        while True:
+            # Forward pass: compute predicted y by passing x to the model.
+            y_pred = self.model(Xtrain)
+
+            # Compute and print loss.
             loss = loss_fn(y_pred, Ytrain)
-            print(t, loss.item())
 
-    # Before the backward pass, use the optimizer object to zero all of the
-    # gradients for the variables it will update (which are the learnable
-    # weights of the model). This is because by default, gradients are
-    # accumulated in buffers( i.e, not overwritten) whenever .backward()
-    # is called. Checkout docs of torch.autograd.backward for more details.
+            # Before the backward pass, use the optimizer object to zero all of the
+            # gradients for the variables it will update (which are the learnable
+            # weights of the model). This is because by default, gradients are
+            # accumulated in buffers( i.e, not overwritten) whenever .backward()
+            # is called. Checkout docs of torch.autograd.backward for more details.
             optimizer.zero_grad()
 
-    # Backward pass: compute gradient of the loss with respect to model
-    # parameters
+            # Backward pass: compute gradient of the loss with respect to model
+            # parameters
             loss.backward()
 
-    # Calling the step function on an Optimizer makes an update to its
-    # parameters
-            optimizer.step() 
+            # Calling the step function on an Optimizer makes an update to its
+            # parameters
+            optimizer.step()
 
-    #    torch.save(self.model.state_dict(), PATH.pth)   
+            if use_validation:
+                y_pred_valid = self.model(Xvalid)
+                valid_loss = loss_fn(y_pred_valid, Yvalid)
+                if prev_valid_loss - valid_loss.item() < conv_error:
+                    break
+                prev_valid_loss = valid_loss.item()
+                if t % 20 == 0:
+                    print(t, prev_valid_loss)
+            else:
+                if prev_loss - loss.item() < conv_error:
+                    break
+                prev_loss = loss.item()
+                if t % 20 == 0:
+                    print(t, prev_loss)
+            t += 1
+
+    #    torch.save(self.model.state_dict(), PATH.pth)
 
     def predict(self, X):
-        Xtest = torch.tensor((X.values), dtype=torch.float)
+        Xtest = torch.tensor((X), dtype=torch.float)
         Y_pred = self.model(Xtest)
-        return Y_pred
-        
-
-
+        return np.squeeze(Y_pred.detach().numpy())
