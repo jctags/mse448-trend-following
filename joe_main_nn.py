@@ -49,7 +49,7 @@ features = [
 label = 'Daily_Return'
 data_directory = 'data'
 data_start = 1990
-valid_start = 2017
+valid_start = 2015
 test_start = 2017
 data_end = 2019
 
@@ -58,7 +58,7 @@ actual_returns = dict()
 train_returns = dict()
 
 filenames = os.listdir(data_directory)
-#filenames = ['Gold_3.csv']
+filenames = ['Gold_3.csv', 'Gold_4.csv']
 
 dfs = []
 
@@ -92,21 +92,19 @@ print("Generating Models")
 
 for i, df in enumerate(dfs):
     data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
-    model = RegressionModel(1)
-    model.train(data['Xtrain'], data['Ytrain'])
+    model = NeuralNetwork()
+    model.train(data['Xtrain'], data['Ytrain'], data['Xvalid'], data['Yvalid'])
     y_pred = model.predict(data['Xtest'])
     predicted_returns[str(i)] = y_pred
     actual_returns[str(i)] = data['Ytest']
     train_returns[str(i)] = data['Ytrain']
 
 cov = np.cov(pd.DataFrame(train_returns).values.T)
-print(cov)
+
 n = len(train_returns.keys())
 
-print(n)
-
 opt = SimplePortfolio(n)
-desired_variance = (0.001)**2
+desired_variance = 1e-4
 
 pred_df = pd.DataFrame(predicted_returns)
 actual_df = pd.DataFrame(actual_returns)
@@ -122,8 +120,6 @@ naive_returns = []
 naive_allocation = np.ones(n)
 naive_allocation = naive_allocation/np.sum(naive_allocation)
 allocations = []
-
-print(len(pred_df))
 for i in range(len(pred_df)):
     naive_return = np.dot(naive_allocation, actual_df.iloc[i,:].values)
     naive_value *= (1+naive_return)
@@ -137,11 +133,11 @@ for i in range(len(pred_df)):
     portfolio_value *= (1+p_return)
     portfolio_over_time.append(portfolio_value)
 
-print(portfolio_value)
-print(naive_value)
+print portfolio_value
+print naive_value
 
 plt.plot(portfolio_over_time)
 plt.plot(naive_over_time)
 plt.show()
 
-# import pdb; pdb.set_trace()
+import pdb; pdb.set_trace()

@@ -11,8 +11,8 @@ class SimplePortfolio():
         objective = w.T * returns
         constraints = [
             #w >= 0.0,
-            cvx.sum(w)<=1.0,
-            cvx.sum(w)>=0.0,
+            cvx.sum(cvx.abs(w))<=1.0,
+            #cvx.sum(w)>=0.0,
             cvx.quad_form(w,cov) <= desired_variance
         ]
         prob = cvx.Problem(cvx.Maximize(objective), constraints)
