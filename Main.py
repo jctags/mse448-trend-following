@@ -97,6 +97,11 @@ def main():
     dfs = new_dfs
 
     for i, df in enumerate(dfs):
+        Next_Price = dfs[i]['Settle_Price'][1:].values
+        dfs[i] = dfs[i][:-1]
+        dfs[i] = dfs[i].assign(Next_Price = Next_Price)
+
+    for i, df in enumerate(dfs):
         data, date = get_data(df, valid_start, test_start, data_end, features, label)
         actual_returns[str(i)] = data['Ytest'].ravel()
         train_returns[str(i)] = data['Ytrain'].ravel()
