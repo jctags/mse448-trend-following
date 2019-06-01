@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
 import os
+import matplotlib
+matplotlib.use("TkAgg")
+from matplotlib import pyplot as plt
 
 def baseline1(unit,money,cross_array, price_array,limit_sell,stop_loss):
     principal = money
@@ -130,8 +133,8 @@ def main():
     num_file = 0
     to_use = ["SMA5Cross", "SMA10Cross","SMA15Cross", "SMA20Cross", "SMA50Cross", "SMA100Cross",
         "EMA10Cross", "EMA12Cross", "EMA20Cross", "EMA26Cross", "EMA50Cross", "EMA100Cross"]
-    take_profit = 0.1
-    cut_loss = 0.05
+    take_profit = 0.03
+    cut_loss = 0.02
     list_of_df = []
 
     for file in os.listdir(directory):
