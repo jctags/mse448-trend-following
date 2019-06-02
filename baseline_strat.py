@@ -216,6 +216,7 @@ def main():
             plt.plot(baseline, label = "Baseline Strategy")
             plt.plot(naive, label = "Naive Strategy")
             plt.axis([0, 450, 0.95, 1.20])
+            plt.legend()
             plt.xlabel('Trading Days')
             plt.ylabel('Portfolio Value')
             plt.show()
