@@ -132,7 +132,7 @@ def max_drawdown(money_over_time_array):
 
 def main():
 
-    nday = 500
+    nday = 426
     directory = 'data'
     starting_money = 1000000.0 #1million
     num_file = 0
@@ -211,7 +211,13 @@ def main():
         print('Profit:', avg_annual_profit3*100,'%')
 
         if cross == 'EMA50Cross':
-            plt.plot(strat3)
+            baseline = strat3/starting_money
+            naive = longonly/starting_money
+            plt.plot(baseline, label = "Baseline Strategy")
+            plt.plot(naive, label = "Naive Strategy")
+            plt.axis([0, 450, 0.95, 1.20])
+            plt.xlabel('Trading Days')
+            plt.ylabel('Portfolio Value')
             plt.show()
 
 
