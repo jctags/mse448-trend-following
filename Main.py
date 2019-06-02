@@ -62,7 +62,7 @@ def main():
     ]
     label = 'Settle_Price'
     data_directory = 'data'
-    valid_start = 2017
+    valid_start = 2016
     test_start = 2017
     data_end = 2019
     predicted_returns = dict()
