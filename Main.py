@@ -111,6 +111,9 @@ def main():
         actual_price[str(i)] = data['Ytest'].ravel()
         train_price[str(i)] = data['Ytrain'].ravel()
         valid_price[str(i)] = data['Yvalid'].ravel()
+        # print(get_data(df, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest'])
+        # daily_test_returns[str(i)], date = get_data(df, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest'].ravel()
+
         df_columns.append(str(i))
         data['Xtrain'] = scale.fit_transform(data['Xtrain'])
         data['Ytrain'] = scale.fit_transform(data['Ytrain'].reshape(-1,1))
@@ -124,7 +127,6 @@ def main():
         y_pred = model.predict(testX)
         y_pred = scale.inverse_transform(y_pred).ravel()
         predicted_price[str(i)] = y_pred
-        daily_test_returns[str(i)], _ = get_data(df, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest']
 
     predicted_returns = dict()
     actual_returns = dict()
@@ -136,9 +138,9 @@ def main():
         predicted_returns[w] = create_return(predicted_price[w], forward_window)
         valid_returns[w] = create_return(valid_price[w], forward_window)
 
-    daily_df = pd.DataFrame(daily_test_returns)
-    daily_df = daily_df[df_columns]
-    daily_df.to_csv('LSTM_output/daily_returns.csv')
+    # daily_df = pd.DataFrame(daily_test_returns)
+    # daily_df = daily_df[df_columns]
+    # daily_df.to_csv('LSTM_output/daily_returns.csv')
     valid_df = pd.DataFrame(valid_returns)
     valid_df = valid_df[df_columns]
     valid_df.to_csv('LSTM_output/valid_returns.csv')

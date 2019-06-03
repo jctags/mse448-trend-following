@@ -14,7 +14,7 @@ class PortfolioSimulator(object):
         self.allocations = [np.zeros(n)]
         self.opt = opt #optimizer
 
-    def simulate(self, pred_df, daily_returns, cov, desired_variance, transaction_costs = 0.0 ):
+    def simulate(self, pred_df, daily_returns, cov, desired_variance, transaction_costs = 0.0):
 
         for i in range(len(pred_df)):
             naive_return = np.dot(self.naive_allocation, daily_returns.iloc[i,:].values)
