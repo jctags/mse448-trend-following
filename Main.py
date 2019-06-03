@@ -9,6 +9,7 @@ from LSTM_model import LSTMModel
 import re
 import preprocessing
 from sklearn.preprocessing import MinMaxScaler
+from preprocessing import create_return
 
 def get_dataframe(filename):
     df = pd.read_csv(filename)
@@ -18,23 +19,21 @@ def get_dataframe(filename):
 
 def get_data_by_years(df, years, features, label):
     ydf = df[df.Date.map(lambda x: x.year in years)]
-    return ydf[features].values, ydf[label].values, ydf['Date'].values
+    return ydf[features].values, ydf[label].values
 
 def get_data_not_by_years(df, years, features, label):
     ydf = df[df.Date.map(lambda x: x.year not in years)]
-    return ydf[features].values, ydf[label].values, ydf['Date'].values
+    return ydf[features].values, ydf[label].values
 
 def get_data(df, valid_start, test_start, data_end, features, label):
     data = {}
-    Date = {}
     train_years = list(range(valid_start, test_start))
     valid_years = list(range(valid_start, test_start))
     test_years  = list(range(test_start,  data_end + 1))
-    data['Xtrain'], data['Ytrain'], Date['train'] = get_data_not_by_years(df, train_years, features, label)
-    data['Xvalid'], data['Yvalid'], Date['valid'] = get_data_by_years(df, valid_years, features, label)
-    data['Xtest'],  data['Ytest'], Date['test']  = get_data_by_years(df, test_years, features, label)
-    return data, Date
-
+    data['Xtrain'], data['Ytrain'] = get_data_not_by_years(df, train_years, features, label)
+    data['Xvalid'], data['Yvalid'] = get_data_by_years(df, valid_years, features, label)
+    data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years, features, label)
+    return data
 
 look_back = 5
 def create_dataset(Xtrain, Ytrain, look_back):
@@ -65,9 +64,10 @@ def main():
     valid_start = 2016
     test_start = 2017
     data_end = 2019
-    predicted_returns = dict()
-    actual_returns = dict()
-    train_returns = dict()
+    predicted_price = dict()
+    actual_price = dict()
+    train_price = dict()
+    valid_price = dict()
 
     scale = MinMaxScaler(feature_range=(0, 1))
 
@@ -96,15 +96,22 @@ def main():
 
     dfs = new_dfs
 
+    forward_window = 1
     for i, df in enumerate(dfs):
-        Next_Price = dfs[i]['Settle_Price'][1:].values
-        dfs[i] = dfs[i][:-1]
+        Next_Price = dfs[i]['Settle_Price'][forward_window:].values
+        dfs[i] = dfs[i][:-forward_window]
         dfs[i] = dfs[i].assign(Next_Price = Next_Price)
 
+    df_columns = []
+    daily_test_returns = dict()
+
     for i, df in enumerate(dfs):
-        data, date = get_data(df, valid_start, test_start, data_end, features, label)
-        actual_returns[str(i)] = data['Ytest'].ravel()
-        train_returns[str(i)] = data['Ytrain'].ravel()
+        data = get_data(df, valid_start, test_start, data_end, features, label)
+        actual_price[str(i)] = data['Ytest'].ravel()
+        train_price[str(i)] = data['Ytrain'].ravel()
+        valid_price[str(i)] = data['Yvalid'].ravel()
+        daily_test_returns[str(i)] = get_data(df, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest'].ravel()
+        df_columns.append(str(i))
         data['Xtrain'] = scale.fit_transform(data['Xtrain'])
         data['Ytrain'] = scale.fit_transform(data['Ytrain'].reshape(-1,1))
         data['Xtest'] = scale.fit_transform(data['Xtest'])
@@ -116,19 +123,31 @@ def main():
         model.train(trainX, trainY, look_back)
         y_pred = model.predict(testX)
         y_pred = scale.inverse_transform(y_pred).ravel()
-        predicted_returns[str(i)] = y_pred
-        # date['test'] = np.array(date['test'][look_back + 1:]).astype(str)
-        # pred = np.vstack((predictedY, date['test']))
-        # pred = np.transpose(pred)
-        # pred_df = pd.DataFrame(pred)
-        # pred_df.to_csv('LSTM_output/predicted_price_' + filename[5:])
+        predicted_price[str(i)] = y_pred
 
+    predicted_returns = dict()
+    actual_returns = dict()
+    train_returns = dict()
+    valid_returns = dict()
+
+    for w in df_columns:
+        actual_returns[w] =  create_return(actual_price[w], forward_window)
+        train_returns[w] = create_return(train_price[w], forward_window)
+        predicted_returns[w] = create_return(predicted_price[w], forward_window)
+        valid_returns[w] = create_return(valid_price[w], forward_window)
+
+    daily_df = pd.DataFrame(daily_test_returns)
+    daily_df = daily_df[df_columns]
+    daily_df.to_csv('LSTM_output/daily_returns.csv')
+    valid_df = pd.DataFrame(valid_returns)
+    valid_df = valid_df[df_columns]
+    valid_df.to_csv('LSTM_output/valid_returns.csv')
     pred_df = pd.DataFrame(predicted_returns)
-    pred_df.to_csv('LSTM_output/predicted_price.csv')
+    pred_df.to_csv('LSTM_output/predicted_returns.csv')
     actual_df = pd.DataFrame(actual_returns)
     train_df = pd.DataFrame(train_returns)
-    train_df.to_csv('LSTM_output/train_price.csv')
-    actual_df.to_csv('LSTM_output/actual_price.csv')
+    train_df.to_csv('LSTM_output/train_returns.csv')
+    actual_df.to_csv('LSTM_output/actual_returns.csv')
 
 if __name__ == "__main__":
     main()

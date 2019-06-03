@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from regression_model import RegressionModel
-from nn_alpha import NeuralNetwork
+#from nn_alpha import NeuralNetwork
 import os
 #from LSTM_model import LSTMModel
 from simple_portfolio import SimplePortfolio
