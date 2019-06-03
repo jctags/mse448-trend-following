@@ -21,6 +21,7 @@ look_back = 10
 data_directory = 'LSTM_output'
 pred_df = pd.read_csv(data_directory + '/' + 'predicted_returns.csv')
 pred_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
+print(pred_df)
 actual_df = pd.read_csv(data_directory + '/' + 'actual_returns.csv')
 actual_df = actual_df[look_back + 1:]
 actual_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
@@ -30,11 +31,13 @@ valid_df = pd.read_csv(data_directory + '/' + 'valid_returns.csv')
 valid_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
 daily_df = pd.read_csv(data_directory + '/' + 'daily_returns.csv')
 daily_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
+daily_df = daily_df[look_back + 1:]
 
 X = valid_df.values
 cov = LedoitWolf().fit(X)
 cov = cov.covariance_
 n = len(train_df.keys())
+print(cov)
 
 opt = SimplePortfolio(n)
 desired_variance = 2e-4
