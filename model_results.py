@@ -16,8 +16,10 @@ def get_results(pred_df, actual_df):
     errors = all_predictions - all_results
     print(np.mean(np.square(errors)))
 
-    print("Regression Coefficient")
-
+    print("Line")
+    model = LinearRegression().fit(np.reshape(all_results,(-1,1)), all_predictions)
+    print("Slope: "+str(model.coef_[0]))
+    print("Intercept: "+str(model.intercept_))
 
     plt.plot(all_results, all_predictions, 'k.')
     plt.title("Correlation: " + str(np.correlate(all_results, all_predictions)[0]))

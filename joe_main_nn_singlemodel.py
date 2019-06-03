@@ -74,8 +74,9 @@ transaction_costs = 0.0
 
 stoploss_value=None
 
-conv_err = 1e-7
-lr = 3e-3
+conv_err = 1e-8
+#overnight use
+lr = 5e-4
 
 predicted_returns = dict()
 actual_returns = dict()
@@ -152,8 +153,6 @@ daily_df = pd.DataFrame(daily_test_returns)
 daily_df = daily_df[df_columns]
 
 opt = SimplePortfolio(n)
-desired_variance = 4e-5
-transaction_costs = 0.0
 
 pred_df = pd.DataFrame(predicted_returns)
 pred_df = pred_df[df_columns]

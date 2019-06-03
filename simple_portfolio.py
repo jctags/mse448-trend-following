@@ -13,7 +13,7 @@ class SimplePortfolio():
 
         objective = new_portfolio.T * returns - cvx.sum(cvx.abs(trades)) * transaction_costs
         constraints = [
-            #w >= 0.0,
+            #new_portfolio >= 0.0,
             cvx.sum(cvx.abs(new_portfolio))<=1.0,
             #cvx.sum(w)>=0.0,
             cvx.quad_form(new_portfolio,cov) <= desired_variance

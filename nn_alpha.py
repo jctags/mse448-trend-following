@@ -42,6 +42,14 @@ class NeuralNetwork(AlphaModel):
 
         self.model = torch.nn.Sequential(torch.nn.Linear(D_in, D_out))
 
+        try:
+            self.model.load_state_dict(torch.load('model_dict.pt'))
+            print("Loaded previous weights")
+            return
+        except:
+            print("Training new model")
+            pass
+
         loss_fn = torch.nn.MSELoss(reduction = 'mean')
 
         optimizer = torch.optim.Adam(self.model.parameters(), lr=self.lr)
@@ -80,7 +88,7 @@ class NeuralNetwork(AlphaModel):
                 if prev_valid_loss - valid_loss.item() < self.conv_err:
                     break
                 prev_valid_loss = valid_loss.item()
-                if t % 10 == 0:
+                if t % 50 == 0:
                     print(t, prev_valid_loss)
             else:
                 if prev_loss - loss.item() < self.conv_err:
@@ -89,8 +97,10 @@ class NeuralNetwork(AlphaModel):
                 if t % 20 == 0:
                     print(t, prev_loss)
             t += 1
+            if t > 5000:
+                break
 
-    #    torch.save(self.model.state_dict(), PATH.pth)
+        #torch.save(self.model.state_dict(), 'model_dict.pt')
 
     def predict(self, X):
         Xtest = torch.tensor((X), dtype=torch.float)

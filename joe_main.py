@@ -70,6 +70,8 @@ transaction_costs = 0.0
 stoploss_value = None
 #stoploss_value = 0.2
 
+model_type = 1 #see regression_model.py
+
 predicted_returns = dict()
 actual_returns = dict()
 train_returns = dict()
@@ -113,7 +115,7 @@ df_columns = []
 
 for i, df in enumerate(dfs):
     data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
-    model = RegressionModel(1)
+    model = RegressionModel(model_type)
     model.train(data['Xtrain'], data['Ytrain'])
     y_pred = model.predict(data['Xtest'])
     predicted_returns[str(i)] = y_pred
@@ -140,7 +142,7 @@ pred_df = pred_df[df_columns]
 actual_df = pd.DataFrame(actual_returns)
 actual_df = actual_df[df_columns]
 
-#get_results(pred_df, actual_df)
+get_results(pred_df, actual_df)
 
 print("Running Portfolio Simulation")
 
