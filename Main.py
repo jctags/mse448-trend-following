@@ -35,7 +35,7 @@ def get_data(df, valid_start, test_start, data_end, features, label):
     data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years, features, label)
     return data
 
-look_back = 10
+look_back = 5
 def create_dataset(Xtrain, Ytrain, look_back):
     dataX, dataY = [], []
     for i in range(len(Xtrain)-look_back-1):

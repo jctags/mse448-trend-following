@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import numpy as np
 from regression_model import RegressionModel
-from nn_alpha import NeuralNetwork
+#from nn_alpha import NeuralNetwork
 import os
 #from LSTM_model import LSTMModel
 from simple_portfolio import SimplePortfolio
@@ -130,6 +130,8 @@ pred_df = pred_df[df_columns]
 actual_df = pd.DataFrame(actual_returns)
 actual_df = actual_df[df_columns]
 
+print(actual_df)
+print(pred_df)
 get_results(pred_df, actual_df)
 
 quit()

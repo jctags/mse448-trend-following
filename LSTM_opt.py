@@ -17,10 +17,12 @@ from model_results import get_results
 
 print("Loading Dataframes")
 
+look_back = 10
 data_directory = 'LSTM_output'
 pred_df = pd.read_csv(data_directory + '/' + 'predicted_returns.csv')
 pred_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
 actual_df = pd.read_csv(data_directory + '/' + 'actual_returns.csv')
+actual_df = actual_df[look_back + 1:]
 actual_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
 train_df = pd.read_csv(data_directory + '/' + 'train_returns.csv')
 train_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
@@ -43,7 +45,7 @@ get_results(pred_df, actual_df)
 print("Running Portfolio Simulation")
 
 sim = PortfolioSimulator(opt, n)
-sim.simulate(pred_df, actual_df, cov, desired_variance, transaction_costs)
+sim.simulate(pred_df, daily_df, cov, desired_variance, transaction_costs)
 sim.plot_over_time()
 
 # portfolio_value = 1.0
@@ -54,14 +56,14 @@ sim.plot_over_time()
 # naive_returns = []
 # naive_allocation = np.ones(n)
 # naive_allocation = naive_allocation/np.sum(naive_allocation)
-# allocations = []
+# allocations = [np.zeros(n)]
 #
 # for i in range(len(pred_df)):
 #     naive_return = np.dot(naive_allocation, actual_df.iloc[i,:].values)
 #     naive_value *= (1+naive_return)
 #     naive_over_time.append(naive_value)
 #     naive_returns.append(naive_return)
-#     w = opt.optimize(pred_df.iloc[i, :].values, cov, desired_variance)
+#     w = opt.optimize(allocations[-1], pred_df.iloc[i, :].values, cov, desired_variance)
 #     allocations.append(w)
 #     p_return = np.dot(w, actual_df.iloc[i, :].values)
 #     portfolio_returns.append(p_return)
@@ -72,5 +74,5 @@ sim.plot_over_time()
 # print(naive_value)
 #
 # plt.plot(portfolio_over_time)
-#plt.plot(naive_over_time)
-plt.show()
+# plt.plot(naive_over_time)
+# plt.show()
