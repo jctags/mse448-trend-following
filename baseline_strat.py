@@ -132,7 +132,7 @@ def max_drawdown(money_over_time_array):
 
 def main():
 
-    nday = 426
+    nday = 427
     directory = 'data'
     starting_money = 1000000.0 #1million
     num_file = 0
