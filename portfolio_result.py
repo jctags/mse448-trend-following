@@ -4,6 +4,7 @@ import os
 import matplotlib
 matplotlib.use("TkAgg")
 from matplotlib import pyplot as plt
+import baseline_strat as bs
 
 
 #Plot
@@ -20,3 +21,8 @@ plt.ylabel('Portfolio Value')
 plt.show()
 
 #Statistics
+
+print('Baseline', bs.sharpe_calc(result['Baseline']), bs.max_drawdown(result['Baseline']))
+print('LSTM', bs.sharpe_calc(result['LSTM']), bs.max_drawdown(result['LSTM']))
+print('Linear', bs.sharpe_calc(result['Linear']), bs.max_drawdown(result['Linear']))
+print('Neural', bs.sharpe_calc(result['Neural']), bs.max_drawdown(result['Neural']))
