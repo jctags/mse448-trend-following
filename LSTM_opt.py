@@ -17,11 +17,10 @@ from model_results import get_results
 
 print("Loading Dataframes")
 
-look_back = 10
+look_back = 5
 data_directory = 'LSTM_output'
 pred_df = pd.read_csv(data_directory + '/' + 'predicted_returns.csv')
 pred_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
-print(pred_df)
 actual_df = pd.read_csv(data_directory + '/' + 'actual_returns.csv')
 actual_df = actual_df[look_back + 1:]
 actual_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
@@ -33,11 +32,14 @@ daily_df = pd.read_csv(data_directory + '/' + 'daily_returns.csv')
 daily_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
 daily_df = daily_df[look_back + 1:]
 
-X = valid_df.values
-cov = LedoitWolf().fit(X)
-cov = cov.covariance_
+# X = valid_df.values
+# cov = LedoitWolf().fit(X)
+# cov = cov.covariance_
+
+cov = np.cov(train_df.values.T)
+
 n = len(train_df.keys())
-print(cov)
+
 
 opt = SimplePortfolio(n)
 desired_variance = 2e-4
@@ -48,7 +50,7 @@ get_results(pred_df, actual_df)
 print("Running Portfolio Simulation")
 
 sim = PortfolioSimulator(opt, n)
-sim.simulate(pred_df, daily_df, cov, desired_variance, transaction_costs)
+sim.simulate(pred_df, actual_df, cov, desired_variance, transaction_costs)
 sim.plot_over_time()
 
 # portfolio_value = 1.0

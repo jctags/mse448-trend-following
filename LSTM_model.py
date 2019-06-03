@@ -28,9 +28,9 @@ class LSTMModel(AlphaModel):
         self.model.summary()
 
         adam = optimizers.Adam(lr = 0.001, clipvalue = 0.5)
-        self.model.compile(loss = 'mean_squared_error', optimizer = adam)
+        self.model.compile(loss = 'mean_squared_error', optimizer = 'adagrad')
         es = EarlyStopping(monitor='loss', mode='min', verbose=1)
-        self.model.fit(X, Y, epochs = 10, batch_size = 32, callbacks = [es])
+        self.model.fit(X, Y, epochs = 10, batch_size = 64, callbacks = [es])
 
     def predict(self, X):
         return self.model.predict(X)
