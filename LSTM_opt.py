@@ -19,14 +19,27 @@ print("Loading Dataframes")
 
 look_back = 5
 data_directory = 'LSTM_output'
-pred_df = pd.read_csv(data_directory + '/' + 'predicted_returns.csv')
+# pred_df = pd.read_csv(data_directory + '/' + 'predicted_returns.csv')
+# pred_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
+# actual_df = pd.read_csv(data_directory + '/' + 'actual_returns.csv')
+# actual_df = actual_df[look_back + 1:]
+# actual_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
+# train_df = pd.read_csv(data_directory + '/' + 'train_returns.csv')
+# train_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
+# valid_df = pd.read_csv(data_directory + '/' + 'valid_returns.csv')
+# valid_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
+# daily_df = pd.read_csv(data_directory + '/' + 'daily_returns.csv')
+# daily_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
+# daily_df = daily_df[look_back + 1:]
+
+pred_df = pd.read_csv(data_directory + '/' + 'predicted_5day_returns.csv')
 pred_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
-actual_df = pd.read_csv(data_directory + '/' + 'actual_returns.csv')
+actual_df = pd.read_csv(data_directory + '/' + 'actual_5day_returns.csv')
 actual_df = actual_df[look_back + 1:]
 actual_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
-train_df = pd.read_csv(data_directory + '/' + 'train_returns.csv')
+train_df = pd.read_csv(data_directory + '/' + 'train_5day_returns.csv')
 train_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
-valid_df = pd.read_csv(data_directory + '/' + 'valid_returns.csv')
+valid_df = pd.read_csv(data_directory + '/' + 'valid_5day_returns.csv')
 valid_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
 daily_df = pd.read_csv(data_directory + '/' + 'daily_returns.csv')
 daily_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
@@ -40,7 +53,12 @@ n = len(train_df.keys())
 
 
 opt = SimplePortfolio(n)
-desired_variance = 4e-5
+#desired variance is in the same
+# use 4e-5 with daily returns to get variance close to naive
+# use 2e-4 with 5-day returns to get variance close to naive
+# desired_variance = 4e-5
+desired_variance = 2e-4
+
 transaction_costs = 2e-4
 
 get_results(pred_df, actual_df)
@@ -48,7 +66,7 @@ get_results(pred_df, actual_df)
 print("Running Portfolio Simulation")
 
 # sim = PortfolioSimulator(opt, n)
-# sim.simulate(pred_df, actual_df, cov, desired_variance, transaction_costs)
+# sim.simulate(pred_df, daily_df, cov, desired_variance, transaction_costs)
 # sim.plot_over_time()
 
 portfolio_value = 1.0
@@ -74,7 +92,7 @@ for i in range(len(pred_df)):
     portfolio_over_time.append(portfolio_value)
 
 portfolio_over_time = pd.DataFrame(portfolio_over_time)
-portfolio_over_time.to_csv('portfolio_result/lstm_over_time.csv')
+portfolio_over_time.to_csv('portfolio_result/lstm_5day_over_time.csv')
 
 plt.plot(portfolio_over_time)
 plt.plot(naive_over_time)
