@@ -59,7 +59,7 @@ def main():
         'SMA5',
         'SMA50',
     ]
-    label = 'Settle_Price'
+    label = '5-day Return'
     data_directory = 'data'
     valid_start = 2016
     test_start = 2017
@@ -130,24 +130,34 @@ def main():
     train_returns = dict()
     valid_returns = dict()
 
-    for w in df_columns:
-        actual_returns[w] =  create_return(actual_price[w], forward_window)
-        train_returns[w] = create_return(train_price[w], forward_window)
-        predicted_returns[w] = create_return(predicted_price[w], forward_window)
-        valid_returns[w] = create_return(valid_price[w], forward_window)
+    # for w in df_columns:
+    #     actual_returns[w] =  create_return(actual_price[w], forward_window)
+    #     train_returns[w] = create_return(train_price[w], forward_window)
+    #     predicted_returns[w] = create_return(predicted_price[w], forward_window)
+    #     valid_returns[w] = create_return(valid_price[w], forward_window)
+
+    predicted_returns = predicted_price
+    actual_returns = actual_price
+    train_returns = train_price
+    valid_returns = valid_price
+
+    # predicted_price_df = pd.DataFrame(predicted_price)
+    # predicted_price_df.to_csv('LSTM_output/predicted_price.csv')
+    # actual_price_df = pd.DataFrame(actual_price)
+    # actual_price_df.to_csv('LSTM_output/actual_price.csv')
 
     daily_df = pd.DataFrame(daily_test_returns)
     daily_df = daily_df[df_columns]
-    daily_df.to_csv('LSTM_output/daily_returns.csv')
+    daily_df.to_csv('LSTM_output/daily_5day_returns.csv')
     valid_df = pd.DataFrame(valid_returns)
     valid_df = valid_df[df_columns]
-    valid_df.to_csv('LSTM_output/valid_returns.csv')
+    valid_df.to_csv('LSTM_output/valid_5day_returns.csv')
     pred_df = pd.DataFrame(predicted_returns)
-    pred_df.to_csv('LSTM_output/predicted_returns.csv')
+    pred_df.to_csv('LSTM_output/predicted_5day_returns.csv')
     actual_df = pd.DataFrame(actual_returns)
     train_df = pd.DataFrame(train_returns)
-    train_df.to_csv('LSTM_output/train_returns.csv')
-    actual_df.to_csv('LSTM_output/actual_returns.csv')
+    train_df.to_csv('LSTM_output/train_5day_returns.csv')
+    actual_df.to_csv('LSTM_output/actual_5day_returns.csv')
 
 if __name__ == "__main__":
     main()

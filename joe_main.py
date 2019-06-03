@@ -125,6 +125,7 @@ for i, df in enumerate(dfs):
     df_columns.append(str(i))
     daily_test_returns[str(i)] = get_data(df, data_start, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest']
 
+
 valid_df = pd.DataFrame(valid_returns)
 valid_df = valid_df[df_columns]
 X = valid_df.values
@@ -139,8 +140,10 @@ opt = SimplePortfolio(n)
 
 pred_df = pd.DataFrame(predicted_returns)
 pred_df = pred_df[df_columns]
+pred_df.to_csv('pred_df_linear.csv')
 actual_df = pd.DataFrame(actual_returns)
 actual_df = actual_df[df_columns]
+actual_df.to_csv('actual_df_linear.csv')
 
 get_results(pred_df, actual_df)
 
