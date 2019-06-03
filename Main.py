@@ -19,22 +19,21 @@ def get_dataframe(filename):
 
 def get_data_by_years(df, years, features, label):
     ydf = df[df.Date.map(lambda x: x.year in years)]
-    return ydf[features].values, ydf[label].values, ydf['Date'].values
+    return ydf[features].values, ydf[label].values
 
 def get_data_not_by_years(df, years, features, label):
     ydf = df[df.Date.map(lambda x: x.year not in years)]
-    return ydf[features].values, ydf[label].values, ydf['Date'].values
+    return ydf[features].values, ydf[label].values
 
 def get_data(df, valid_start, test_start, data_end, features, label):
     data = {}
-    Date = {}
     train_years = list(range(valid_start, test_start))
     valid_years = list(range(valid_start, test_start))
     test_years  = list(range(test_start,  data_end + 1))
-    data['Xtrain'], data['Ytrain'], Date['train'] = get_data_not_by_years(df, train_years, features, label)
-    data['Xvalid'], data['Yvalid'], Date['valid'] = get_data_by_years(df, valid_years, features, label)
-    data['Xtest'],  data['Ytest'], Date['test']  = get_data_by_years(df, test_years, features, label)
-    return data, Date
+    data['Xtrain'], data['Ytrain'] = get_data_not_by_years(df, train_years, features, label)
+    data['Xvalid'], data['Yvalid'] = get_data_by_years(df, valid_years, features, label)
+    data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years, features, label)
+    return data
 
 look_back = 10
 def create_dataset(Xtrain, Ytrain, look_back):
@@ -107,13 +106,11 @@ def main():
     daily_test_returns = dict()
 
     for i, df in enumerate(dfs):
-        data, date = get_data(df, valid_start, test_start, data_end, features, label)
+        data = get_data(df, valid_start, test_start, data_end, features, label)
         actual_price[str(i)] = data['Ytest'].ravel()
         train_price[str(i)] = data['Ytrain'].ravel()
         valid_price[str(i)] = data['Yvalid'].ravel()
-        # print(get_data(df, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest'])
-        # daily_test_returns[str(i)], date = get_data(df, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest'].ravel()
-
+        daily_test_returns[str(i)] = get_data(df, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest'].ravel()
         df_columns.append(str(i))
         data['Xtrain'] = scale.fit_transform(data['Xtrain'])
         data['Ytrain'] = scale.fit_transform(data['Ytrain'].reshape(-1,1))
@@ -131,6 +128,7 @@ def main():
     predicted_returns = dict()
     actual_returns = dict()
     train_returns = dict()
+    valid_returns = dict()
 
     for w in df_columns:
         actual_returns[w] =  create_return(actual_price[w], forward_window)
@@ -138,9 +136,9 @@ def main():
         predicted_returns[w] = create_return(predicted_price[w], forward_window)
         valid_returns[w] = create_return(valid_price[w], forward_window)
 
-    # daily_df = pd.DataFrame(daily_test_returns)
-    # daily_df = daily_df[df_columns]
-    # daily_df.to_csv('LSTM_output/daily_returns.csv')
+    daily_df = pd.DataFrame(daily_test_returns)
+    daily_df = daily_df[df_columns]
+    daily_df.to_csv('LSTM_output/daily_returns.csv')
     valid_df = pd.DataFrame(valid_returns)
     valid_df = valid_df[df_columns]
     valid_df.to_csv('LSTM_output/valid_returns.csv')
