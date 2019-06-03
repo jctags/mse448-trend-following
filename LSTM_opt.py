@@ -32,52 +32,50 @@ daily_df = pd.read_csv(data_directory + '/' + 'daily_returns.csv')
 daily_df.drop(["Unnamed: 0"],axis='columns', inplace=True)
 daily_df = daily_df[look_back + 1:]
 
-# X = valid_df.values
-# cov = LedoitWolf().fit(X)
-# cov = cov.covariance_
-
-cov = np.cov(train_df.values.T)
+X = valid_df.values
+cov = LedoitWolf().fit(X)
+cov = cov.covariance_
 
 n = len(train_df.keys())
 
 
 opt = SimplePortfolio(n)
-desired_variance = 2e-4
+desired_variance = 4e-5
 transaction_costs = 2e-4
 
 get_results(pred_df, actual_df)
 
 print("Running Portfolio Simulation")
 
-sim = PortfolioSimulator(opt, n)
-sim.simulate(pred_df, actual_df, cov, desired_variance, transaction_costs)
-sim.plot_over_time()
+# sim = PortfolioSimulator(opt, n)
+# sim.simulate(pred_df, actual_df, cov, desired_variance, transaction_costs)
+# sim.plot_over_time()
 
-# portfolio_value = 1.0
-# portfolio_over_time = [portfolio_value]
-# portfolio_returns = []
-# naive_value = 1.0
-# naive_over_time = [portfolio_value]
-# naive_returns = []
-# naive_allocation = np.ones(n)
-# naive_allocation = naive_allocation/np.sum(naive_allocation)
-# allocations = [np.zeros(n)]
-#
-# for i in range(len(pred_df)):
-#     naive_return = np.dot(naive_allocation, actual_df.iloc[i,:].values)
-#     naive_value *= (1+naive_return)
-#     naive_over_time.append(naive_value)
-#     naive_returns.append(naive_return)
-#     w = opt.optimize(allocations[-1], pred_df.iloc[i, :].values, cov, desired_variance)
-#     allocations.append(w)
-#     p_return = np.dot(w, actual_df.iloc[i, :].values)
-#     portfolio_returns.append(p_return)
-#     portfolio_value *= (1+p_return)
-#     portfolio_over_time.append(portfolio_value)
-#
-# print(portfolio_value)
-# print(naive_value)
-#
-# plt.plot(portfolio_over_time)
-# plt.plot(naive_over_time)
-# plt.show()
+portfolio_value = 1.0
+portfolio_over_time = [portfolio_value]
+portfolio_returns = []
+naive_value = 1.0
+naive_over_time = [portfolio_value]
+naive_returns = []
+naive_allocation = np.ones(n)
+naive_allocation = naive_allocation/np.sum(naive_allocation)
+allocations = [np.zeros(n)]
+
+for i in range(len(pred_df)):
+    naive_return = np.dot(naive_allocation, actual_df.iloc[i,:].values)
+    naive_value *= (1+naive_return)
+    naive_over_time.append(naive_value)
+    naive_returns.append(naive_return)
+    w = opt.optimize(allocations[-1], pred_df.iloc[i, :].values, cov, desired_variance)
+    allocations.append(w)
+    p_return = np.dot(w, actual_df.iloc[i, :].values)
+    portfolio_returns.append(p_return)
+    portfolio_value *= (1+p_return)
+    portfolio_over_time.append(portfolio_value)
+
+portfolio_over_time = pd.DataFrame(portfolio_over_time)
+portfolio_over_time.to_csv('portfolio_result/lstm_over_time.csv')
+
+plt.plot(portfolio_over_time)
+plt.plot(naive_over_time)
+plt.show()

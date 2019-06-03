@@ -59,7 +59,7 @@ def main():
         'SMA5',
         'SMA50',
     ]
-    label = 'Daily_Return'
+    label = '5-day Return'
     data_directory = 'data'
     valid_start = 2016
     test_start = 2017
@@ -148,16 +148,16 @@ def main():
 
     daily_df = pd.DataFrame(daily_test_returns)
     daily_df = daily_df[df_columns]
-    daily_df.to_csv('LSTM_output/daily_returns.csv')
+    daily_df.to_csv('LSTM_output/daily_5day_returns.csv')
     valid_df = pd.DataFrame(valid_returns)
     valid_df = valid_df[df_columns]
-    valid_df.to_csv('LSTM_output/valid_returns.csv')
+    valid_df.to_csv('LSTM_output/valid_5day_returns.csv')
     pred_df = pd.DataFrame(predicted_returns)
-    pred_df.to_csv('LSTM_output/predicted_returns.csv')
+    pred_df.to_csv('LSTM_output/predicted_5day_returns.csv')
     actual_df = pd.DataFrame(actual_returns)
     train_df = pd.DataFrame(train_returns)
-    train_df.to_csv('LSTM_output/train_returns.csv')
-    actual_df.to_csv('LSTM_output/actual_returns.csv')
+    train_df.to_csv('LSTM_output/train_5day_returns.csv')
+    actual_df.to_csv('LSTM_output/actual_5day_returns.csv')
 
 if __name__ == "__main__":
     main()

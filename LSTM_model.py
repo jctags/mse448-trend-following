@@ -17,12 +17,12 @@ class LSTMModel(AlphaModel):
 
     def train(self, X, Y, look_back):
         assert len(X) == len(Y)
-        self.model.add(LSTM(units=512, input_shape=(X.shape[1], X.shape[2]), return_sequences = True))
+        self.model.add(LSTM(units=128, input_shape=(X.shape[1], X.shape[2]), return_sequences = True))
         self.model.add(Dropout(0.5))
-        self.model.add(LSTM(units=256, return_sequences = True))
-        self.model.add(Dropout(0.2))
+        self.model.add(LSTM(units=128, return_sequences = True))
+        self.model.add(Dropout(0.5))
         self.model.add(LSTM(units=128))
-        self.model.add(Dropout(0.3))
+        self.model.add(Dropout(0.5))
         self.model.add(Dense(units = 1))
         self.model.add(Activation('linear'))
         self.model.summary()
