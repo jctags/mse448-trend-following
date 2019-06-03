@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from stoploss import get_stoploss_allocation
 
 class PortfolioSimulator(object):
 
@@ -14,7 +15,7 @@ class PortfolioSimulator(object):
         self.allocations = [np.zeros(n)]
         self.opt = opt #optimizer
 
-    def simulate(self, pred_df, daily_returns, cov, desired_variance, transaction_costs = 0.0 ):
+    def simulate(self, pred_df, daily_returns, cov, desired_variance, transaction_costs = 0.0, stoploss_value=None ):
 
         for i in range(len(pred_df)):
             naive_return = np.dot(self.naive_allocation, daily_returns.iloc[i,:].values)
@@ -23,6 +24,9 @@ class PortfolioSimulator(object):
             self.naive_returns.append(naive_return)
 
             w = self.opt.optimize(self.allocations[-1], pred_df.iloc[i, :].values, cov, desired_variance, transaction_costs)
+            if stoploss_value is not None:
+                w = get_stoploss_allocation(w, self.allocations, daily_returns.iloc[0:i, :], stoploss_value)
+
             self.allocations.append(w)
             p_return = np.dot(w, daily_returns.iloc[i, :].values)
 

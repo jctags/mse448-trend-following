@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score
+from sklearn.linear_model import LinearRegression
 
 def get_results(pred_df, actual_df):
     all_predictions = []
@@ -14,6 +15,9 @@ def get_results(pred_df, actual_df):
     print("Mean Squared Error")
     errors = all_predictions - all_results
     print(np.mean(np.square(errors)))
+
+    print("Regression Coefficient")
+
 
     plt.plot(all_results, all_predictions, 'k.')
     plt.title("Correlation: " + str(np.correlate(all_results, all_predictions)[0]))

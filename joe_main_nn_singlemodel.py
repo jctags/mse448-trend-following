@@ -6,6 +6,9 @@ from nn_alpha import NeuralNetwork
 import os
 #from LSTM_model import LSTMModel
 from simple_portfolio import SimplePortfolio
+from portfolio_sim import PortfolioSimulator
+from sklearn.covariance import LedoitWolf
+from model_results import get_results
 
 def get_dataframe(filename):
     df = pd.read_csv(filename)
@@ -44,18 +47,40 @@ features = [
     'SMA20norm',
     'SMA5norm',
     'SMA50norm',
+    'MACD',
+    'EMA10Cross',
+    'EMA100Cross',
+    'EMA12Cross',
+    'EMA20Cross',
+    'EMA26Cross',
+    'EMA50Cross',
+    'SMA10Cross',
+    'SMA100Cross',
+    'SMA15Cross',
+    'SMA20Cross',
+    'SMA5Cross',
+    'SMA50Cross',
 ]
 
 label = 'Daily_Return'
 data_directory = 'data'
 data_start = 2012
-valid_start = 2015
+valid_start = 2016
 test_start = 2017
 data_end = 2019
+
+desired_variance = 4e-5
+transaction_costs = 0.0
+
+stoploss_value=None
+
+conv_err = 1e-7
+lr = 3e-3
 
 predicted_returns = dict()
 actual_returns = dict()
 train_returns = dict()
+valid_returns = dict()
 
 filenames = os.listdir(data_directory)
 
@@ -78,7 +103,7 @@ Ytrain = data['Ytrain']
 Xvalid = data['Xvalid']
 Yvalid = data['Yvalid']
 
-model = NeuralNetwork()
+model = NeuralNetwork(lr, conv_err)
 model.train(Xtrain, Ytrain, Xvalid, Yvalid)
 
 print("Standardizing Dates")
@@ -99,54 +124,49 @@ for df in dfs:
 
 dfs = new_dfs
 
+daily_test_returns = dict()
+
 print("Generating Models")
+
+df_columns = []
 
 for i, df in enumerate(dfs):
     data = get_data(df, data_start, valid_start, test_start, data_end, features, label)
     y_pred = model.predict(data['Xtest'])
     predicted_returns[str(i)] = y_pred
     actual_returns[str(i)] = data['Ytest']
-    train_returns[str(i)] = data['Yvalid']
+    train_returns[str(i)] = data['Ytrain']
+    valid_returns[str(i)] = data['Yvalid']
+    df_columns.append(str(i))
+    daily_test_returns[str(i)] = get_data(df, data_start, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest']
 
-cov = np.cov(pd.DataFrame(train_returns).values.T)
 
+valid_df = pd.DataFrame(valid_returns)
+valid_df = valid_df[df_columns]
+X = valid_df.values
+cov = LedoitWolf().fit(X)
+cov = cov.covariance_
 n = len(train_returns.keys())
 
+daily_df = pd.DataFrame(daily_test_returns)
+daily_df = daily_df[df_columns]
+
 opt = SimplePortfolio(n)
-desired_variance = 10#(0.001)**2
+desired_variance = 4e-5
+transaction_costs = 0.0
 
 pred_df = pd.DataFrame(predicted_returns)
+pred_df = pred_df[df_columns]
 actual_df = pd.DataFrame(actual_returns)
+actual_df = actual_df[df_columns]
+
+get_results(pred_df, actual_df)
 
 print("Running Portfolio Simulation")
 
-portfolio_value = 1.0
-portfolio_over_time = [portfolio_value]
-portfolio_returns = []
-naive_value = 1.0
-naive_over_time = [portfolio_value]
-naive_returns = []
-naive_allocation = np.ones(n)
-naive_allocation = naive_allocation/np.sum(naive_allocation)
-allocations = []
-for i in range(len(pred_df)):
-    naive_return = np.dot(naive_allocation, actual_df.iloc[i,:].values)
-    naive_value *= (1+naive_return)
-    naive_over_time.append(naive_value)
-    naive_returns.append(naive_return)
+sim = PortfolioSimulator(opt, n)
+sim.simulate(pred_df, daily_df, cov, desired_variance, transaction_costs, stoploss_value)
 
-    w = opt.optimize(pred_df.iloc[i, :].values, cov, desired_variance)
-    allocations.append(w)
-    p_return = np.dot(w, actual_df.iloc[i, :].values)
-    portfolio_returns.append(p_return)
-    portfolio_value *= (1+p_return)
-    portfolio_over_time.append(portfolio_value)
-
-print portfolio_value
-print naive_value
-
-plt.plot(portfolio_over_time)
-plt.plot(naive_over_time)
-plt.show()
+sim.plot_over_time()
 
 import pdb; pdb.set_trace()

@@ -49,13 +49,26 @@ features = [
     'SMA50norm',
 ]
 
-label = '5-day Return'
-#label = 'Daily_Return'
+#label = '5-day Return'
+label = 'Daily_Return'
 data_directory = 'data'
 data_start = 1990
 valid_start = 2016
 test_start = 2017
 data_end = 2019
+
+#desired variance is in the same
+# use 4e-5 with daily returns to get variance close to naive
+# use 2e-4 with 5-day returns to get variance close to naive
+desired_variance = 4e-5
+#desired_variance = 2e-4
+
+transaction_costs = 0.0
+
+# negative return allowed before position is closed
+# None  to disable stoploss
+stoploss_value = None
+#stoploss_value = 0.2
 
 predicted_returns = dict()
 actual_returns = dict()
@@ -63,7 +76,6 @@ train_returns = dict()
 valid_returns = dict()
 
 filenames = os.listdir(data_directory)
-#filenames = ['Gold_3.csv']
 
 dfs = []
 
@@ -122,22 +134,18 @@ daily_df = pd.DataFrame(daily_test_returns)
 daily_df = daily_df[df_columns]
 
 opt = SimplePortfolio(n)
-desired_variance = 2e-4
-transaction_costs = 2e-4
 
 pred_df = pd.DataFrame(predicted_returns)
 pred_df = pred_df[df_columns]
 actual_df = pd.DataFrame(actual_returns)
 actual_df = actual_df[df_columns]
 
-get_results(pred_df, actual_df)
-
-quit()
+#get_results(pred_df, actual_df)
 
 print("Running Portfolio Simulation")
 
 sim = PortfolioSimulator(opt, n)
-sim.simulate(pred_df, daily_df, cov, desired_variance, transaction_costs)
+sim.simulate(pred_df, daily_df, cov, desired_variance, transaction_costs, stoploss_value)
 
 sim.plot_over_time()
 
