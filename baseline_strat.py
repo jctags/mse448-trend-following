@@ -220,6 +220,9 @@ def main():
             plt.xlabel('Trading Days')
             plt.ylabel('Portfolio Value')
             plt.show()
+            port = {'Value' : baseline}
+            data = pd.DataFrame(port)
+            data.to_csv("baseline_strat.csv")
 
 
 if __name__ == "__main__":
