@@ -43,7 +43,7 @@ get_results(pred_df, actual_df)
 print("Running Portfolio Simulation")
 
 sim = PortfolioSimulator(opt, n)
-sim.simulate(pred_df, daily_df, cov, desired_variance, transaction_costs)
+sim.simulate(pred_df, actual_df, cov, desired_variance, transaction_costs)
 sim.plot_over_time()
 
 # portfolio_value = 1.0

@@ -124,7 +124,7 @@ def main():
         y_pred = model.predict(testX)
         y_pred = scale.inverse_transform(y_pred).ravel()
         predicted_price[str(i)] = y_pred
-        daily_test_returns[str(i)] = get_data(df, data_start, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest']
+        daily_test_returns[str(i)], _ = get_data(df, valid_start, test_start, data_end, features, 'Daily_Return')['Ytest']
 
     predicted_returns = dict()
     actual_returns = dict()
