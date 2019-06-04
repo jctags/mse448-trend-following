@@ -29,7 +29,7 @@ def get_data(df, valid_start, test_start, data_end, features, label):
     data = {}
     train_years = list(range(valid_start, test_start))
     valid_years = list(range(valid_start, test_start))
-    test_years  = list(range(test_start,  data_end + 1))
+    test_years  = list(range(test_start,  data_end))
     data['Xtrain'], data['Ytrain'] = get_data_not_by_years(df, train_years, features, label)
     data['Xvalid'], data['Yvalid'] = get_data_by_years(df, valid_years, features, label)
     data['Xtest'],  data['Ytest']  = get_data_by_years(df, test_years, features, label)
@@ -121,7 +121,7 @@ def main():
         print(trainX.shape, trainY.shape, testX.shape, testY.shape)
         model = LSTMModel()
         model.train(trainX, trainY, look_back)
-        y_pred = model.predict(testX)
+        y_pred = model.predict(trainX)
         y_pred = scale.inverse_transform(y_pred).ravel()
         predicted_price[str(i)] = y_pred
 
@@ -146,18 +146,18 @@ def main():
     # actual_price_df = pd.DataFrame(actual_price)
     # actual_price_df.to_csv('LSTM_output/actual_price.csv')
 
-    daily_df = pd.DataFrame(daily_test_returns)
-    daily_df = daily_df[df_columns]
-    daily_df.to_csv('LSTM_output/daily_5day_returns.csv')
-    valid_df = pd.DataFrame(valid_returns)
-    valid_df = valid_df[df_columns]
-    valid_df.to_csv('LSTM_output/valid_5day_returns.csv')
+    # daily_df = pd.DataFrame(daily_test_returns)
+    # daily_df = daily_df[df_columns]
+    # daily_df.to_csv('LSTM_output/daily_5day_returns.csv')
+    # valid_df = pd.DataFrame(valid_returns)
+    # valid_df = valid_df[df_columns]
+    # valid_df.to_csv('LSTM_output/valid_5day_returns.csv')
     pred_df = pd.DataFrame(predicted_returns)
-    pred_df.to_csv('LSTM_output/predicted_5day_returns.csv')
-    actual_df = pd.DataFrame(actual_returns)
-    train_df = pd.DataFrame(train_returns)
-    train_df.to_csv('LSTM_output/train_5day_returns.csv')
-    actual_df.to_csv('LSTM_output/actual_5day_returns.csv')
+    pred_df.to_csv('LSTM_output/predicted_train_5day_returns.csv')
+    # actual_df = pd.DataFrame(actual_returns)
+    # train_df = pd.DataFrame(train_returns)
+    # train_df.to_csv('LSTM_output/train_5day_returns.csv')
+    # actual_df.to_csv('LSTM_output/actual_5day_returns.csv')
 
 if __name__ == "__main__":
     main()

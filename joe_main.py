@@ -70,7 +70,7 @@ transaction_costs = 0.0
 stoploss_value = None
 #stoploss_value = 0.2
 
-model_type = 1 #see regression_model.py
+model_type = 3 #see regression_model.py
 
 predicted_returns = dict()
 actual_returns = dict()
